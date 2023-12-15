@@ -15,7 +15,8 @@ def repl_func(match: re.Match):
     return " ".join(match.group().split())
 
 
-# This is the main program for the project to navigate between frontend, backend and other class
+# This is the main program for the project to navigate between map and algorithm
+# DO NOT MODIFY THIS FILE
 class SystemController:
     def __init__(self):
         self.mapLists = {}
