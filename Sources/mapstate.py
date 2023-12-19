@@ -1,6 +1,7 @@
 import os
 from colorama import Fore
 import copy
+import random
 CUR_PATH = os.path.dirname(os.path.abspath(__file__))
 
 class MapState:
@@ -8,6 +9,9 @@ class MapState:
         self.name = name
         self.nSize = nSize
         self.mazer = copy.deepcopy(mazer)
+        # self.initialPos = generatePlayer(mazer, nSize)
+        # self.initialPos = (3, 0, 'R')
+        self.initialPos = (3, 0)
     
     def printMap(self):
         print('Map name: ' + self.name)
@@ -40,6 +44,27 @@ def loadMap(folderPath, mapName):
             mazer.append(f.readline().strip().split('.'))
     return MapState(mapName, nSize, mazer)
 
+def generatePlayer(mazer, nSize):
+    '''call this only once'''
+    # random a valid position not 'G', 'W', 'P' in map
+    valid = []
+    for i in range(nSize):
+        for j in range(nSize):
+            if 'G' not in mazer[i][j] and 'W' not in mazer[i][j] and 'P' not in mazer[i][j]:
+                valid.append((i, j))
+    # random a position
+    pos = random.choice(valid)
+    choice = ['U', 'D', 'L', 'R']
+    if pos[0] == 0:
+        choice.remove('U')
+    if pos[0] == nSize - 1:
+        choice.remove('D')
+    if pos[1] == 0:
+        choice.remove('L')
+    if pos[1] == nSize - 1:
+        choice.remove('R')
+    direction = random.choice(choice)
+    return pos[0], pos[1], direction
 
 '''
 S is stench, W is wumpus, G is gold, P is pit, B is breeze, - is nothing, . is separator

@@ -1,5 +1,6 @@
 from lists_of_algorithms import *
 from mapstate import *
+from algorithm import *
 import os 
 import json
 import re
@@ -74,6 +75,9 @@ class SystemController:
         elif algorithm == 'fol':
             print("\t\t+ FOL algorithm is not implemented yet!")
             solution = [(1, 2, 100), (2, 2, 0), (3, 2, 50)]
+        elif algorithm == 'nerve':
+            print("\t\t+ nerve algorithm is not implemented yet!")
+            solution = nerve(self.mapLists[mapName], 0)
         else:
             print("\t\t+ Algorithm is not exist!")
             return None
@@ -121,6 +125,8 @@ if __name__ == '__main__':
             system.solving(mapName, 'dpll')
         elif algorithm == 'fol':
             system.solving(mapName, 'fol')
+        elif algorithm == 'nerve':
+            system.solving(mapName, 'nerve')
         else:
             print('Algorithm is not exist!')
             exit()
