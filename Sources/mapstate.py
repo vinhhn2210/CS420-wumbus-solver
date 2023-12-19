@@ -43,7 +43,7 @@ def loadMap(folderPath, mapName):
         for i in range(nSize):
             mazer.append(f.readline().strip().split('.'))
     return MapState(mapName[:-4], nSize, mazer)
-
+''''''
 def generatePlayer(mazer, nSize):
     '''call this only once'''
     # random a valid position not 'G', 'W', 'P' in map

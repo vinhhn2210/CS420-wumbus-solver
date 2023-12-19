@@ -22,7 +22,7 @@ class InteractiveGame:
 
     def loadMap(self, mapState):
         self.size = mapState.nSize
-        self.mazer = copy.deepcopy(mapState.mazer)
+        self.mazer = copy.deepcopy(mapState.mazer)  
         self.explored = [[False for i in range(self.size)] for j in range(self.size)]
 
     def gameStart(self):
@@ -32,8 +32,8 @@ class InteractiveGame:
         self.explored = [[False for i in range(self.size)] for j in range(self.size)]
         # get random position for player which is valid
         while True:
-            x = random.randint(0, self.size - 1)
-            y = random.randint(0, self.size - 1)
+            x = random.randint(0, self.size -1)
+            y = random.randint(0, self.size -1)
             if self.mazer[x][y] == '-':
                 self.playerPosition = (x, y, 0)
                 break
@@ -96,7 +96,7 @@ class InteractiveGame:
             x, y, dir = self.playerPosition
             newX = x + self.dx[dir]
             newY = y + self.dy[dir]
-            if newX <= 0 or newX > self.size or newY <= 0 or newY > self.size:
+            if newX < 0 or newX >= self.size or newY < 0 or newY >= self.size:
                 self.score -= 10000000
                 self.flushLog()
                 self.gameEnd()
@@ -112,6 +112,9 @@ class InteractiveGame:
                 self.score -= 10000
                 self.flushLog()
                 self.gameEnd()
+                return True
+            else:
+                self.flushLog()
                 return True
     
     def shootArrow(self):
@@ -137,7 +140,7 @@ class InteractiveGame:
     def gameEnd(self):
         self.isEnd = True
         # add color to game score
-        print('\t\t+ Score:\t' + '\033[93m' + str(self.score) + '\033[0m')
+        print('\t\t+ Score:\t' + '\033[93m' + str(self.score) + '\033[0m')  
         
             
 
