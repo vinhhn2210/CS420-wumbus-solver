@@ -1,6 +1,8 @@
 from lists_of_algorithms import *
 from mapstate import *
 from algorithm import *
+from interactive import *
+from algo_sample import *
 import os 
 import json
 import re
@@ -9,6 +11,7 @@ import time
 import psutil
 import tracemalloc
 from matplotlib import pyplot as plt
+
 # back to the parent folder
 CUR_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -36,21 +39,25 @@ class SystemController:
         # print time, mem with 4 digits after comma
         self.timeCount = round(self.timeCount * 1000, 4)
         self.memoryCount = round(self.memoryCount, 4)
-        print('\t\t+ Time: \t{} ms'.format(self.timeCount))
-        print('\t\t+ Memory:\t{} Mib'.format(self.memoryCount))
+        # add color to time and memory
+        print('\t\t+ Time:\t\t' + '\033[93m' + str(self.timeCount) + '\033[0m' + ' ms')
+        print('\t\t+ Memory:\t' + '\033[93m' + str(self.memoryCount) + '\033[0m' + ' MB')
         return self.timeCount, self.memoryCount
 
     def readAllFolderMap(self, folderPath):
         MAP_PATH = os.path.join(CUR_PATH, folderPath)
         for mapName in os.listdir(MAP_PATH):
-            self.mapLists[mapName] = loadMap(folderPath, mapName)
+            self.mapLists[mapName[:-4]] = loadMap(folderPath, mapName)
     
     def writeSolution(self, mapName, algorithm, solution):
-        with open(os.path.join(CUR_PATH, 'Solutions', 'result_' + mapName[:-4] + '_' + algorithm + '.txt'), 'w') as f:
+        with open(os.path.join(CUR_PATH, 'Solutions', 'result_' + mapName + '_' + algorithm + '.txt'), 'w') as f:
             f.write(str(len(solution)) + '\n')
             for step in solution:
                 f.write(str(step)[1: -1] + '\n')
-        print('\t\t+ Solution is written to file result_' + mapName[:-4] + '_' + algorithm + '.txt')
+
+        # add color to result_ + mapName + '_' + algorithm + '.txt
+        print('\t\t+ Result file: ' + '\033[93m' + 'result_' + mapName + '_' + algorithm + '.txt' + '\033[0m')
+    
     def printMap(self, mapName):
         self.mapLists[mapName].printMap()
 
@@ -69,26 +76,35 @@ class SystemController:
         print('\t+ Solving ' + mapName + ' with ' + algorithm + ' algorithm...')
         self.measureStart()
         solution = None
-        if algorithm == 'dpll':
+        model = None
+        if algorithm == 'sample':
+            print("\t\t+ Sample algorithm")
+            model = AlgoSample(self.mapLists[mapName])
+        elif algorithm == 'dpll':
             print("\t\t+ DPLL algorithm is not implemented yet!")
-            solution = [(1, 2, 100), (1, 3, 200), (2, 3, 300)]
+            #solution = [(1, 2, 1, 100), (1, 3, 1, 200), (2, 3, 1, 300)]
         elif algorithm == 'fol':
             print("\t\t+ FOL algorithm is not implemented yet!")
-            solution = [(1, 2, 100), (2, 2, 0), (3, 2, 50)]
+            #solution = [(1, 2, 1, 100), (2, 2, 1, 0), (3, 2, 1, 50)]
         elif algorithm == 'nerve':
             print("\t\t+ nerve algorithm is not implemented yet!")
-            solution = nerve(self.mapLists[mapName], 0)
+            #solution = nerve(self.mapLists[mapName], 0)
         else:
             print("\t\t+ Algorithm is not exist!")
             return None
-        
+        solution = model.solve()
+
         self.measureEnd()
         
         if solution is None:
             print('\t+ No solution found!')
             return None
-        print('\t\t+ Solution found!')
+
         self.writeSolution(mapName, algorithm, solution)
+
+        # add color to mapname and algorith name
+        mapName = '\033[94m' + mapName + '\033[0m'
+        algorithm = '\033[92m' + algorithm + '\033[0m'
         print('\t+ Solving ' + mapName + ' with ' + algorithm + ' algorithm is done!')
 
 if __name__ == '__main__':
@@ -112,24 +128,19 @@ if __name__ == '__main__':
         print('Solving all map with all current algorithms...')
         system.solvingAllMap()
     elif sys.argv[2] == 'custom':
-        print('Please choose the map you want to solve, for example: input1-level1')
+        print('Please choose the map you want to solve, for example: map1')
         mapName = input('Enter the map name: ')
         if mapName not in system.mapLists:
             print('Map name is not exist!')
             exit()
-        print('Please choose the algorithm you want to solve, for example: dfs ')
+        print('Please choose the algorithm you want to solve, for example: sample')
         for i, algo in enumerate(algo_lists):
             print(f'{i + 1}. {algo}')
         algorithm = input('Enter the algorithm name: ')
-        if algorithm == 'dpll':
-            system.solving(mapName, 'dpll')
-        elif algorithm == 'fol':
-            system.solving(mapName, 'fol')
-        elif algorithm == 'nerve':
-            system.solving(mapName, 'nerve')
-        else:
+        if algorithm not in algo_lists:
             print('Algorithm is not exist!')
             exit()
+        system.solving(mapName, algorithm)
         print('Solving ' + mapName + ' with ' + algorithm + ' algorithm is done!')
     tracemalloc.stop()
     # done and visualize the solution

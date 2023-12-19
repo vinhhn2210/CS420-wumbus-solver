@@ -1,5 +1,6 @@
 import copy
 import random
+from mapstate import *
 class InteractiveGame:
     def __init__(self):
         self.size = 0
@@ -14,14 +15,14 @@ class InteractiveGame:
         self.dy = [0, 1, 0, -1]
     
     def flushLog(self):
-        self.logs.append(self.playerPosition + (self.score, 0))
+        self.logs.append(self.playerPosition + (self.score, ))
 
     def getLogs(self):
         return self.logs
 
     def loadMap(self, mapState):
-        self.size = mapState.nsize
-        self.mazer = copy.deepcopy(mapState.maze)
+        self.size = mapState.nSize
+        self.mazer = copy.deepcopy(mapState.mazer)
         self.explored = [[False for i in range(self.size)] for j in range(self.size)]
 
     def gameStart(self):
@@ -96,6 +97,9 @@ class InteractiveGame:
             newX = x + self.dx[dir]
             newY = y + self.dy[dir]
             if newX <= 0 or newX > self.size or newY <= 0 or newY > self.size:
+                self.score -= 10000000
+                self.flushLog()
+                self.gameEnd()
                 return False
             self.playerPosition = (newX, newY, self.playerPosition[2])
             self.score -= 10
@@ -132,7 +136,8 @@ class InteractiveGame:
 
     def gameEnd(self):
         self.isEnd = True
-        print('Game ended with score: ' + str(self.score))
+        # add color to game score
+        print('\t\t+ Score:\t' + '\033[93m' + str(self.score) + '\033[0m')
         
             
 

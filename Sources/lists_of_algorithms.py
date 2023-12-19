@@ -1,1 +1,1 @@
-algo_lists = ['dpll', 'fol', 'nerve']
+algo_lists = ['sample','dpll', 'fol', 'nerve']
