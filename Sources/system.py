@@ -3,6 +3,7 @@ from mapstate import *
 from algorithm import *
 from interactive import *
 from algo_sample import *
+from algo_nerve import *
 import os 
 import json
 import re
@@ -88,11 +89,13 @@ class SystemController:
             #solution = [(1, 2, 1, 100), (2, 2, 1, 0), (3, 2, 1, 50)]
         elif algorithm == 'nerve':
             print("\t\t+ nerve algorithm is not implemented yet!")
-            #solution = nerve(self.mapLists[mapName], 0)
+            # solution = nerve(self.mapLists[mapName], 0)
+            model = Nerve(self.mapLists[mapName])
         else:
             print("\t\t+ Algorithm is not exist!")
             return None
-        solution = model.solve()
+        if model is not None:
+            solution = model.solve()
 
         self.measureEnd()
         

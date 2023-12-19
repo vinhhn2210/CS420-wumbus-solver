@@ -167,7 +167,7 @@ def nerve(mapstate, point):
                         continue
                     else:
                         if estimate[i] == 3:
-                            estimate[i] = [key]
+                            estimate[i] = key
                             continue
                         else:
                             # this room is safe

@@ -37,7 +37,10 @@ class InteractiveGame:
             if self.mazer[x][y] == '-':
                 self.playerPosition = (x, y, 0)
                 break
-        self.explored[x][y] = True
+        # self.explored[x][y] = True
+        
+        # self.playerPosition = (3, 0, 0)
+        # self.explored[3][0] = True
         self.flushLog()
         return self.playerPosition
     
@@ -82,6 +85,9 @@ class InteractiveGame:
                 return True
         return False
     
+    def isNone(self):
+        return self.getCellView() == '-'
+    
     def move(self, action):
         if self.isEnd:
             print('Game is already ended, please start a new game!')
@@ -89,7 +95,7 @@ class InteractiveGame:
         if action not in self.directions:
             return False
         if self.playerPosition[2] != self.directions[action]:
-            self.playerPosition[2] = self.directions[action]
+            self.playerPosition = (self.playerPosition[0], self.playerPosition[1], self.directions[action])
             self.flushLog()
             return True
         else:
