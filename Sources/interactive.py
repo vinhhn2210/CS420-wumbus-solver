@@ -91,8 +91,8 @@ class InteractiveGame:
     def isNone(self):
         return self.getCellView() == '-'
     
-    def isVisited(self):
-        return self.explored[self.playerPosition[0]][self.playerPosition[1]]
+    # def isVisited(self):
+    #     return self.explored[self.playerPosition[0]][self.playerPosition[1]]
     
     def move(self, action):
         if self.isEnd:
@@ -115,20 +115,20 @@ class InteractiveGame:
                 return False
             self.playerPosition = (newX, newY, self.playerPosition[2])
             self.score -= 10
+            self.explored[newX][newY] = True
             if self.isGold():
-                if not self.isVisited():    
-                    self.explored[newX][newY] = True
-                    self.score += 1000
+                self.score += 1000
+                self.mazer[self.playerPosition[0]][self.playerPosition[1]] = self.mazer[self.playerPosition[0]][self.playerPosition[1]].replace('G', '')
+                if len(self.mazer[self.playerPosition[0]][self.playerPosition[1]]) == 0:
+                    self.mazer[self.playerPosition[0]][self.playerPosition[1]] = '-'
                 self.flushLog()
                 return True
             elif self.isWumpus() or self.isPit():
-                self.explored[newX][newY] = True
                 self.score -= 10000
                 self.flushLog()
                 self.gameEnd()
                 return True
             else:
-                self.explored[newX][newY] = True
                 self.flushLog()
                 return True
     
