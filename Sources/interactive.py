@@ -31,16 +31,16 @@ class InteractiveGame:
         self.logs = []
         self.explored = [[False for i in range(self.size)] for j in range(self.size)]
         # get random position for player which is valid
-        while True:
-            x = random.randint(0, self.size -1)
-            y = random.randint(0, self.size -1)
-            if self.mazer[x][y] == '-':
-                self.playerPosition = (x, y, 0)
-                break
+        # while True:
+        #     x = random.randint(0, self.size -1)
+        #     y = random.randint(0, self.size -1)
+        #     if self.mazer[x][y] == '-':
+        #         self.playerPosition = (x, y, 0)
+        #         break
         # self.explored[x][y] = True
         
-        # self.playerPosition = (3, 0, 0)
-        # self.explored[3][0] = True
+        self.playerPosition = (3, 0, 0)
+        self.explored[3][0] = True
         self.flushLog()
         return self.playerPosition
     
@@ -53,6 +53,9 @@ class InteractiveGame:
     
     def getCellView(self):
         x, y, _ = self.playerPosition
+        return self.mazer[x][y]
+    
+    def getCell(self, x, y):
         return self.mazer[x][y]
 
     def isPit(self):
@@ -88,6 +91,9 @@ class InteractiveGame:
     def isNone(self):
         return self.getCellView() == '-'
     
+    def isVisited(self):
+        return self.explored[self.playerPosition[0]][self.playerPosition[1]]
+    
     def move(self, action):
         if self.isEnd:
             print('Game is already ended, please start a new game!')
@@ -109,19 +115,46 @@ class InteractiveGame:
                 return False
             self.playerPosition = (newX, newY, self.playerPosition[2])
             self.score -= 10
-            self.explored[newX][newY] = True
             if self.isGold():
-                self.score += 1000
+                if not self.isVisited():    
+                    self.explored[newX][newY] = True
+                    self.score += 1000
                 self.flushLog()
                 return True
             elif self.isWumpus() or self.isPit():
+                self.explored[newX][newY] = True
                 self.score -= 10000
                 self.flushLog()
                 self.gameEnd()
                 return True
             else:
+                self.explored[newX][newY] = True
                 self.flushLog()
                 return True
+    
+    def connectedRooms(self, x, y):
+        connected = []
+        for i in range(4):
+            newX = x + self.dx[i]
+            newY = y + self.dy[i]
+            if newX < 0 or newX >= self.size or newY < 0 or newY >= self.size:
+                continue
+            connected.append((newX, newY))
+        return connected
+    
+    def killWumpus(self, x, y):
+        for i in self.connectedRooms(x, y):
+            # check if this room connect with wumpus
+            noWumpus = True
+            for j in self.connectedRooms(i[0], i[1]):
+                if self.mazer[j[0]][j[1]] == 'W':
+                    noWumpus = False
+                    break
+            if noWumpus:
+                self.mazer[i[0]][i[1]] = self.mazer[i[0]][i[1]].replace('S', '')
+                if len(self.mazer[i[0]][i[1]]) == 0:
+                    self.mazer[i[0]][i[1]] = '-'
+        
     
     def shootArrow(self):
         if self.isEnd:
@@ -136,6 +169,9 @@ class InteractiveGame:
             self.mazer[nextX][nextY] = self.mazer[nextX][nextY].replace('W', '')
             if len(self.mazer[nextX][nextY]) == 0:
                 self.mazer[nextX][nextY] = '-'
+            self.killWumpus(nextX, nextY)
+            # print(Fore.RED + "You killed the Wumpus!")
+            # MapState('agentMap', self.size, self.mazer).printMap()
             #self.score += 100
             #self.flushLog()
             #self.gameEnd()
