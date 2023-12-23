@@ -94,6 +94,17 @@ class InteractiveGame:
     # def isVisited(self):
     #     return self.explored[self.playerPosition[0]][self.playerPosition[1]]
     
+    def moveImmediately(self, action):
+        curPos = self.getPlayerPosition()
+        self.move(action)
+        newPos = self.getPlayerPosition()
+        if newPos[0] == curPos[0] and newPos[1] == curPos[1]:
+            self.move(action)
+
+    def changeDirection(self, action):
+        self.playerPosition = (self.playerPosition[0], self.playerPosition[1], self.directions[action])
+        self.flushLog()
+
     def move(self, action):
         if self.isEnd:
             print('Game is already ended, please start a new game!')
