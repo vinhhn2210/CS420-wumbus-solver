@@ -3,6 +3,7 @@ from mapstate import *
 from algorithm import *
 from interactive import *
 from algo_sample import *
+from algo_dpll import *
 from algo_nerve import *
 import os 
 import json
@@ -82,7 +83,8 @@ class SystemController:
             print("\t\t+ Sample algorithm")
             model = AlgoSample(self.mapLists[mapName])
         elif algorithm == 'dpll':
-            print("\t\t+ DPLL algorithm is not implemented yet!")
+            print("\t\t+ DPLL algorithm")
+            model = DPLLAlgo(self.mapLists[mapName])
             #solution = [(1, 2, 1, 100), (1, 3, 1, 200), (2, 3, 1, 300)]
         elif algorithm == 'fol':
             print("\t\t+ FOL algorithm is not implemented yet!")
