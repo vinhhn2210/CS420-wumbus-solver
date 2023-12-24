@@ -61,10 +61,10 @@ class Menu:
         algoTickCoord = [
             (containerBoxContainer[0], containerBoxContainer[1] + containerBoxContainer[3] * 30 / 100, containerBoxContainer[2] * 20 / 100, containerBoxContainer[1] * 15 / 100),
         ]
-        algoTickCoord.append((containerBoxContainer[0] + containerBoxContainer[2] - algoTickCoord[0][2], algoTickCoord[0][1], algoTickCoord[0][2], algoTickCoord[0][3]))
+        algoTickCoord.append((containerBoxContainer[0] + containerBoxContainer[2] - algoTickCoord[0][2] - containerBoxContainer[2] * 25 / 100, algoTickCoord[0][1], algoTickCoord[0][2], algoTickCoord[0][3]))
 
         self.algoTickButtonList = [[ButtonClass.Button(
-            (containerBoxContainer[2] *  / 100, containerBoxContainer[3] * 3 / 100),
+            (containerBoxContainer[2] * 10 / 100, containerBoxContainer[3] * 10 / 100),
             Const.TICK_IMAGE[j],
             algoTickCoord[i]
         ) for j in range(2)] for i in range(2)]
@@ -74,7 +74,7 @@ class Menu:
             Const.BROWN,
             25,
             self.algoTuple[i],
-            (self.algoTickButtonList[i][0].coord[0] + containerBoxContainer[3] * 5 / 100 + self.algoTickButtonList[i][0].size[0], self.algoTickButtonList[i][0].coord[1], 0, self.algoTickButtonList[i][0].size[1])
+            (self.algoTickButtonList[i][0].coord[0] + containerBoxContainer[3] * 2 / 100 + self.algoTickButtonList[i][0].size[0], self.algoTickButtonList[i][0].coord[1], 0, self.algoTickButtonList[i][0].size[1])
         ) for i in range(len(self.algoTuple))]
 
         # Map Text
