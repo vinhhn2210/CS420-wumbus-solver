@@ -1,1 +1,2 @@
 global-exclude __pycache__
+global-exclude Sources/__pycache__
