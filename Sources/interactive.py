@@ -13,35 +13,92 @@ class InteractiveGame:
         self.directions = {'UP': 0, 'RIGHT': 1, 'DOWN': 2, 'LEFT': 3}
         self.dx = [-1, 0, 1, 0]
         self.dy = [0, 1, 0, -1]
+        self.jsonData = {}
     
     def flushLog(self):
         self.logs.append(self.playerPosition + (self.score, ))
+        self.jsonData[str(len(self.logs))] = {
+            "mapSize": self.size,
+            "map": self.mazer[::-1],
+            "agent": [self.playerPosition[0], self.playerPosition[1], self.playerPosition[2], self.score],
+        }
+
+    def debug(self):
+        print('player position:', self.playerPosition, 'score:', self.score)
+        debugMaze = copy.deepcopy(self.mazer)
+        debugMaze[self.playerPosition[0]][self.playerPosition[1]] += 'A'
+        for i in range(self.size):
+            for j in range(self.size):
+                for ch in debugMaze[i][j]:
+                    if ch == 'S':
+                        print(Fore.RED + ch, end = '')
+                    elif ch == 'W':
+                        print(Fore.GREEN + ch, end = '')
+                    elif ch == 'G':
+                        print(Fore.YELLOW + ch, end = '')
+                    elif ch == 'P':
+                        print(Fore.MAGENTA + ch, end = '')
+                    elif ch == 'B':
+                        print(Fore.CYAN + ch, end = '')
+                    elif ch == '-':
+                        print(Fore.WHITE + ch, end = '')
+                    elif ch == 'A':
+                        print(Fore.BLUE + ch, end = '')
+                print(Fore.WHITE + ' ', end = '\t')
+            print(end = '\t\t')
+            for j in range(self.size):
+                if self.explored[i][j] == False:
+                    print(Fore.WHITE + 'X', end = '\t')
+                    continue
+                for ch in debugMaze[i][j]:
+                    if ch == 'S':
+                        print(Fore.RED + ch, end = '')
+                    elif ch == 'W':
+                        print(Fore.GREEN + ch, end = '')
+                    elif ch == 'G':
+                        print(Fore.YELLOW + ch, end = '')
+                    elif ch == 'P':
+                        print(Fore.MAGENTA + ch, end = '')
+                    elif ch == 'B':
+                        print(Fore.CYAN + ch, end = '')
+                    elif ch == '-':
+                        print(Fore.WHITE + ch, end = '')
+                    elif ch == 'A':
+                        print(Fore.BLUE + ch, end = '')
+                print(Fore.WHITE + ' ', end = '\t')
+            print()
 
     def getLogs(self):
         return self.logs
+
+    def getJsonLogs(self, mapName, agentPath, algorithm):
+        return self.jsonData
+
+    def isGoal(self):
+        return self.playerPosition[0] == 0 and self.playerPosition[1] == 0
 
     def loadMap(self, mapState):
         self.size = mapState.nSize
         self.mazer = copy.deepcopy(mapState.mazer)  
         self.explored = [[False for i in range(self.size)] for j in range(self.size)]
+        self.playerPosition = mapState.initialPos
 
     def gameStart(self):
         self.score = 0
         self.isEnd = False
         self.logs = []
         self.explored = [[False for i in range(self.size)] for j in range(self.size)]
-        # get random position for player which is valid
-        # while True:
-        #     x = random.randint(0, self.size -1)
-        #     y = random.randint(0, self.size -1)
-        #     if self.mazer[x][y] == '-':
-        #         self.playerPosition = (x, y, 0)
-        #         break
-        # self.explored[x][y] = True
-        
-        self.playerPosition = (3, 0, 0)
-        self.explored[3][0] = True
+        self.explored[self.playerPosition[0]][self.playerPosition[1]] = True
         self.flushLog()
+        self.jsonData = {
+            "0": {
+                "time": 0,
+                "memory": 0,
+                "mapSize": self.size,
+                "map": self.mazer[::-1],
+                "agent": [self.playerPosition[0], self.playerPosition[1], self.playerPosition[2], self.score],
+            },
+        }
         return self.playerPosition
     
     
@@ -88,6 +145,16 @@ class InteractiveGame:
                 return True
         return False
     
+    def isStenchVisionView(self, x, y):
+        if self.explored[x][y] == False:
+            return -1
+        return self.explored[x][y] == True and 'S' in self.mazer[x][y]
+    
+    def isBreezeVisionView(self, x, y):
+        if self.explored[x][y] == False:
+            return -1
+        return self.explored[x][y] == True and 'B' in self.mazer[x][y]
+
     def isNone(self):
         return self.getCellView() == '-'
     
@@ -158,7 +225,7 @@ class InteractiveGame:
             # check if this room connect with wumpus
             noWumpus = True
             for j in self.connectedRooms(i[0], i[1]):
-                if self.mazer[j[0]][j[1]] == 'W':
+                if 'W' in self.mazer[j[0]][j[1]]:
                     noWumpus = False
                     break
             if noWumpus:
@@ -180,6 +247,7 @@ class InteractiveGame:
             self.mazer[nextX][nextY] = self.mazer[nextX][nextY].replace('W', '')
             if len(self.mazer[nextX][nextY]) == 0:
                 self.mazer[nextX][nextY] = '-'
+            self.explored[nextX][nextY] = True
             self.killWumpus(nextX, nextY)
             # print(Fore.RED + "You killed the Wumpus!")
             # MapState('agentMap', self.size, self.mazer).printMap()

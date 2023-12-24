@@ -289,7 +289,7 @@ class Nerve:
         player = self.interactive.getPlayerPosition()
         self.safe = [(player[0], player[1])]
         while not self.interactive.isEnd:
-
+            self.interactive.debug()
             player = self.interactive.getPlayerPosition()
             # print(Fore.GREEN + "Safe position" + Fore.WHITE, self.safe)
             
@@ -321,4 +321,5 @@ class Nerve:
         print(Fore.GREEN + "\n\nWhat i have view: ")
         print(self.view)
         self.agentMap() 
+        self.interactive.gameEnd()
         return self.interactive.getLogs() # donot modify this line

@@ -1,12 +1,17 @@
 # this code to generate a map with obstacles and save it in a file
 import random
 import os
+import sys
+from mapstate import *
 
 CUR_PATH = os.path.dirname(os.path.abspath(__file__))
 class WumpusWorldGenerator:
-    def __init__(self, size, name):
-        self.size = size
+    def __init__(self, size, name, pitCoef = 0.05, wumpusMaximun = 10, goldMaximum = 10):
+        self.size = int(size)
         self.name = name
+        self.pitCoef = float(pitCoef)
+        self.wumpusMaximun = min(int(wumpusMaximun), int(size))
+        self.goldMaximum = min(int(goldMaximum), int(size))
         self.maze = [['-' for i in range(self.size)] for j in range(self.size)]
         self.generateMap()
         self.saveMap()
@@ -15,10 +20,10 @@ class WumpusWorldGenerator:
         # generate pit
         for i in range(self.size):
             for j in range(self.size):
-                if random.random() < 0.2:
+                if random.random() < self.pitCoef:
                     self.maze[i][j] = 'P'
         # generate wumpus
-        nWumpus = random.randint(1, 10)
+        nWumpus = random.randint(1, self.wumpusMaximun)
         for _ in range(nWumpus):
             while True:
                 x = random.randint(0, self.size -1)
@@ -27,7 +32,7 @@ class WumpusWorldGenerator:
                     self.maze[x][y] = 'W'
                     break
         # generate gold
-        nGold = random.randint(1, 10)
+        nGold = random.randint(1, self.goldMaximum)
         for _ in range(nGold):
             while True:
                 x = random.randint(0, self.size -1)
@@ -35,10 +40,11 @@ class WumpusWorldGenerator:
                 if self.maze[x][y] == '-':
                     self.maze[x][y] = 'G'
                     break
+        mapState = MapState(self.name, self.size, self.maze)
+        mapState.printMap()
 
     def saveMap(self):
         # create file and save map
-
         with open(os.path.join(CUR_PATH, 'Map', self.name + '.txt'), 'w') as f:
             f.write(str(self.size) + '\n')
             for i in range(self.size):
@@ -49,5 +55,17 @@ class WumpusWorldGenerator:
         print('Map ' + self.name + ' is saved!')
 
 if __name__ == '__main__':
-    for i in range(1, 21):
-        WumpusWorldGenerator(10, 'map' + str(i))
+
+    #for i in range(1, 11):
+    #    WumpusWorldGenerator(10, 'map' + str(i))
+    if len(sys.argv) > 6:
+        print('Please input 5 arguments: size, name, pitCoef, wumpusMaximun, goldMaximum')
+        exit()
+    if len(sys.argv) == 3:
+        WumpusWorldGenerator(sys.argv[1], sys.argv[2])
+    elif len(sys.argv) == 4:
+        WumpusWorldGenerator(sys.argv[1], sys.argv[2], sys.argv[3])
+    elif len(sys.argv) == 5:
+        WumpusWorldGenerator(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+    elif len(sys.argv) == 6:
+        WumpusWorldGenerator(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])

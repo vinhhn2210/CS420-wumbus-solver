@@ -20,7 +20,7 @@ from interactive import *
 
 5. + self.interactive.isStench() -> return True if agent is in stench, False otherwise
     + self.interactive.isBreeze() -> return True if agent is in breeze, False otherwise
-    + self.interactive.isGold() -> return True if agent get a goal, False otherwise
+    + self.interactive.isGold() -> return True if agent get a gold, False otherwise
 '''
 
 class AlgoSample:

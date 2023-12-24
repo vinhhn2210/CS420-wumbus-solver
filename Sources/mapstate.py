@@ -11,33 +11,42 @@ class MapState:
         self.mazer = copy.deepcopy(mazer)
         # self.initialPos = generatePlayer(mazer, nSize)
         # self.initialPos = (3, 0, 'R')
-        self.initialPos = (3, 0)
+        self.initialPos = (3, 0, 0)
+        # flip map vertically
+        self.mazer = self.mazer[::-1]
         for i in range(nSize):
             for j in range(nSize):
-                if self.mazer[i][j] != 'W' and self.mazer[i][j] != 'P':
+                #if self.mazer[i][j] != 'W' and self.mazer[i][j] != 'P':
+                if True:
                     # check if there is a pit in 4 adjacent cells
-                    if i > 0 and self.mazer[i - 1][j] == 'P':
+                    if i > 0 and 'P' in self.mazer[i - 1][j]:
                         self.mazer[i][j] += 'B'
-                    elif i < nSize - 1 and self.mazer[i + 1][j] == 'P':
+                    elif i < nSize - 1 and 'P' in self.mazer[i + 1][j]:
                         self.mazer[i][j] += 'B'
-                    elif j > 0 and self.mazer[i][j - 1] == 'P':
+                    elif j > 0 and 'P' in self.mazer[i][j - 1]:
                         self.mazer[i][j] += 'B'
-                    elif j < nSize - 1 and self.mazer[i][j + 1] == 'P':
+                    elif j < nSize - 1 and 'P' in self.mazer[i][j + 1]:
                         self.mazer[i][j] += 'B'
                     # check if there is a wumpus in 4 adjacent cells
-                    if i > 0 and self.mazer[i - 1][j] == 'W':
+                    if i > 0 and 'W' in self.mazer[i - 1][j]:
                         self.mazer[i][j] += 'S'
-                    elif i < nSize - 1 and self.mazer[i + 1][j] == 'W':
+                    elif i < nSize - 1 and 'W' in self.mazer[i + 1][j]:
                         self.mazer[i][j] += 'S'
-                    elif j > 0 and self.mazer[i][j - 1] == 'W':
+                    elif j > 0 and 'W' in self.mazer[i][j - 1]:
                         self.mazer[i][j] += 'S'
-                    elif j < nSize - 1 and self.mazer[i][j + 1] == 'W':
+                    elif j < nSize - 1 and 'W' in self.mazer[i][j + 1]:
                         self.mazer[i][j] += 'S'
                 if len(self.mazer[i][j]) == 0:
                     self.mazer[i][j] = '-'
                 if len(self.mazer[i][j]) > 1 and '-' in self.mazer[i][j]:
                     self.mazer[i][j] = self.mazer[i][j].replace('-', '')
-            
+        # get random position for player which is valid
+        while True:
+            x = random.randint(0, self.nSize -1)
+            y = random.randint(0, self.nSize -1)
+            if self.mazer[x][y] == '-':
+                self.initialPos = (x, y, 0)
+                break
     def printMap(self):
         print('Map name: ' + self.name)
         print('Map size: ' + str(self.nSize) + ' x ' + str(self.nSize))
