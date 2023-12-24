@@ -51,30 +51,30 @@ class Menu:
             Const.BROWN,
             45,
             "LOGICAL AGENT",
-            (containerBoxContainer[0], containerBoxContainer[1], containerBoxContainer[2], containerBoxContainer[3] * 15 / 100)
+            (containerBoxContainer[0], containerBoxContainer[1] + containerBoxContainer[3] * 5 / 100, containerBoxContainer[2], containerBoxContainer[3] * 15 / 100)
         )
-
-        # Choose Algorithm
-        algoTickCoord = [
-            (containerBoxContainer[0], containerBoxContainer[1] + containerBoxContainer[3] * 25 / 100, containerBoxContainer[2] * 20 / 100, containerBoxContainer[1] * 15 / 100),
-       ]
-       algoTickCoord.append((containerBoxContainer[0] + con))
-
-        self.algoTickButtonList = [[ButtonClass.Button(
-            (self.screenWidth * 3 / 100, self.screenWidth * 3 / 100),
-            Const.TICK_IMAGE[j],
-            algoTickCoord[i]
-        ) for j in range(2)] for i in range(2)]
 
         # Algorithm Text
         self.algoTuple = ['DPLL', 'Nerve']
+
+        # Choose Algorithm
+        algoTickCoord = [
+            (containerBoxContainer[0], containerBoxContainer[1] + containerBoxContainer[3] * 30 / 100, containerBoxContainer[2] * 20 / 100, containerBoxContainer[1] * 15 / 100),
+        ]
+        algoTickCoord.append((containerBoxContainer[0] + containerBoxContainer[2] - algoTickCoord[0][2], algoTickCoord[0][1], algoTickCoord[0][2], algoTickCoord[0][3]))
+
+        self.algoTickButtonList = [[ButtonClass.Button(
+            (containerBoxContainer[2] *  / 100, containerBoxContainer[3] * 3 / 100),
+            Const.TICK_IMAGE[j],
+            algoTickCoord[i]
+        ) for j in range(2)] for i in range(2)]
 
         self.algoText = [TextClass.Text(
             Const.VCR_OSD_MONO_FONT,
             Const.BROWN,
             25,
             self.algoTuple[i],
-            (self.algoTickButtonList[i][0].coord[0] + self.screenWidth * 1 / 100 + self.algoTickButtonList[i][0].size[0], self.algoTickButtonList[i][0].coord[1], 0, self.algoTickButtonList[i][0].size[1])
+            (self.algoTickButtonList[i][0].coord[0] + containerBoxContainer[3] * 5 / 100 + self.algoTickButtonList[i][0].size[0], self.algoTickButtonList[i][0].coord[1], 0, self.algoTickButtonList[i][0].size[1])
         ) for i in range(len(self.algoTuple))]
 
         # Map Text
@@ -83,14 +83,14 @@ class Menu:
             Const.BROWN,
             45,
             "MAP",
-            (containerBoxContainer[0], containerBoxContainer[1] + containerBoxContainer[3] * 53 / 100, containerBoxContainer[2], containerBoxContainer[3] * 15 / 100)
+            (containerBoxContainer[0], containerBoxContainer[1] + containerBoxContainer[3] * 37 / 100, containerBoxContainer[2], containerBoxContainer[3] * 15 / 100)
         )
 
         # Map Dropbox
         self.mapDropbox = ObjectClass.Object(
             (self.screenWidth * 25 / 100, self.screenHeight * 10 / 100),
             Const.DROPBOX_IMAGE,
-            (containerBoxContainer[0], containerBoxContainer[1] + containerBoxContainer[3] * 66 / 100, containerBoxContainer[2], containerBoxContainer[3] * 20 / 100)
+            (containerBoxContainer[0], containerBoxContainer[1] + containerBoxContainer[3] * 53 / 100, containerBoxContainer[2], containerBoxContainer[3] * 20 / 100)
         )
 
         # Map ID
@@ -118,14 +118,14 @@ class Menu:
 
         # Import Map Button
         self.importMapButton = ButtonClass.Button(
-            (self.screenWidth * 15 / 100, self.screenHeight * 6 / 100),
+            (self.screenWidth * 16 / 100, self.screenHeight * 8 / 100),
             Const.IMPORT_BUTTON_IMAGE,
-            (containerBoxContainer[0], containerBoxContainer[1] + containerBoxContainer[3] * 83 / 100, containerBoxContainer[2], containerBoxContainer[3] * 20 / 100),
+            (containerBoxContainer[0], containerBoxContainer[1] + containerBoxContainer[3] * 75 / 100, containerBoxContainer[2], containerBoxContainer[3] * 20 / 100),
         )
         self.importMapText = TextClass.Text(
             Const.AMATICSC_FONT,
             Const.BROWN,
-            25,
+            30,
             'Import Map',
             (self.importMapButton.coord[0], self.importMapButton.coord[1], self.importMapButton.size[0], self.importMapButton.size[1])
         )
