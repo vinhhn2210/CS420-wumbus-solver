@@ -26,7 +26,7 @@ class InteractiveGame:
     def debug(self):
         print('player position:', self.playerPosition, 'score:', self.score)
         debugMaze = copy.deepcopy(self.mazer)
-        debugMaze[self.playerPosition[0]][self.playerPosition[1]].append('A')
+        debugMaze[self.playerPosition[0]][self.playerPosition[1]] += 'A'
         for i in range(self.size):
             for j in range(self.size):
                 for ch in debugMaze[i][j]:

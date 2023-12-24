@@ -19,22 +19,22 @@ class MapState:
                 #if self.mazer[i][j] != 'W' and self.mazer[i][j] != 'P':
                 if True:
                     # check if there is a pit in 4 adjacent cells
-                    if i > 0 and self.mazer[i - 1][j] == 'P':
+                    if i > 0 and 'P' in self.mazer[i - 1][j]:
                         self.mazer[i][j] += 'B'
-                    elif i < nSize - 1 and self.mazer[i + 1][j] == 'P':
+                    elif i < nSize - 1 and 'P' in self.mazer[i + 1][j]:
                         self.mazer[i][j] += 'B'
-                    elif j > 0 and self.mazer[i][j - 1] == 'P':
+                    elif j > 0 and 'P' in self.mazer[i][j - 1]:
                         self.mazer[i][j] += 'B'
-                    elif j < nSize - 1 and self.mazer[i][j + 1] == 'P':
+                    elif j < nSize - 1 and 'P' in self.mazer[i][j + 1]:
                         self.mazer[i][j] += 'B'
                     # check if there is a wumpus in 4 adjacent cells
-                    if i > 0 and self.mazer[i - 1][j] == 'W':
+                    if i > 0 and 'W' in self.mazer[i - 1][j]:
                         self.mazer[i][j] += 'S'
-                    elif i < nSize - 1 and self.mazer[i + 1][j] == 'W':
+                    elif i < nSize - 1 and 'W' in self.mazer[i + 1][j]:
                         self.mazer[i][j] += 'S'
-                    elif j > 0 and self.mazer[i][j - 1] == 'W':
+                    elif j > 0 and 'W' in self.mazer[i][j - 1]:
                         self.mazer[i][j] += 'S'
-                    elif j < nSize - 1 and self.mazer[i][j + 1] == 'W':
+                    elif j < nSize - 1 and 'W' in self.mazer[i][j + 1]:
                         self.mazer[i][j] += 'S'
                 if len(self.mazer[i][j]) == 0:
                     self.mazer[i][j] = '-'
