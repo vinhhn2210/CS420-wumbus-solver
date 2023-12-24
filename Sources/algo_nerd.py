@@ -27,13 +27,14 @@ from interactive import *
 CONVERT = {'B': 1, 'S': 2, 'BS': 3}
 
 
-class Nerve:
+class Nerd:
     def __init__(self, mapState):
         self.interactive = InteractiveGame()
         self.interactive.loadMap(mapState)
         self.view = {}
         self.estimate = {} # self.estimate[(i, j)] = 1: B, 2: S, 3: BS
-        self.door = (self.interactive.size - 1, 0)
+        self.door = (0, 0, 'UP')
+        # self.door = (mapState.nSize - 1, 0, 'DOWN')
         self.safe = []
         self.parent = {}
         
@@ -58,7 +59,8 @@ class Nerve:
     
     def newMove(self, playerPos):
         '''return a list of new move from the current position'''
-        return [i for i in self.possibleMove(playerPos) if (i[0], i[1]) not in self.view]
+        k = [i for i in self.possibleMove(playerPos) if (i[0], i[1]) not in self.view]
+        return k
 
     
     def agentMap(self):
@@ -74,21 +76,25 @@ class Nerve:
                     # temp[i][j] = view[(i, j)]
                     # temp[i][j] = ']
         print(Fore.YELLOW + "Agent map: ")
+        # flip vertically
+        temp = temp[::-1]
         MapState('agentMap', nSize, temp).printMap()
         
         
     def escape(self):
         player = self.interactive.getPlayerPosition()
-        self.safe = [self.door]
+        self.safe = [(self.door[0], self.door[1])]
         if self.travelNextMove(player):
+            self.interactive.gameEnd()
             # nextDoor = self.interactive.getPlayerPosition()
-            # self.interactive.move('DOWN')
+            # self.interactive.move(self.door[2])
             # player = self.interactive.getPlayerPosition()
             # if (player[0], player[1]) == (nextDoor[0], nextDoor[1]):
-                # self.interactive.move('DOWN')
+            #     self.interactive.move(self.door[2])
             pass
         else:
             print(Fore.RED + "Cannot escape" + Fore.WHITE)
+            self.interactive.gameEnd()
     
     def findNextMove(self, previous):
         '''find the optimal safe position'''
@@ -120,6 +126,7 @@ class Nerve:
         path = []
         current = self.findNextMove(previous)
         if (current == None):
+            # print("No more move to go")
             return False
         # print(Fore.CYAN + "Destination: ", destination)
         while (current):
@@ -192,11 +199,12 @@ class Nerve:
             return None
     
     def travelWumpus(self, previous):
+        print("Travel to kill wumpus")
         path = []
         current = self.findWumpus(previous)
         if (current == None):
+            print("No more wumpus to kill")
             return False
-        # print(Fore.CYAN + "Destination: ", destination)
         while (current):
             path.append(current)
             current = self.parent[(current[0], current[1])]
@@ -205,15 +213,9 @@ class Nerve:
         path.pop(0)
         # print(Fore.WHITE + "    Path: ", path)
         for i in path:
-            # print(Fore.WHITE + "    Move to", i[2])
-            cur = self.interactive.getPlayerPosition()
-            self.interactive.move(i[2])
-            new = self.interactive.getPlayerPosition()
-            if (cur[0], cur[1]) == (new[0], new[1]):
-                self.interactive.move(i[2])
-            # print(self.interactive.getPlayerPosition())
+            self.interactive.moveImmediately(i[2])
         player = self.interactive.getPlayerPosition()
-        if player[2] == wumpus[2]:
+        if player[2] == self.interactive.directions[wumpus[2]]:
             self.interactive.shootArrow()
             self.interactive.move(wumpus[2])
         else:
@@ -221,7 +223,7 @@ class Nerve:
             self.interactive.shootArrow()
             self.interactive.move(wumpus[2])
         # print(Fore.BLUE + "May kill Wumpus at" + Fore.WHITE, wumpus)
-        # self.safe.append((wumpus[0], wumpus[1]))
+        self.safe.append((wumpus[0], wumpus[1]))
         
         self.updateView((wumpus[0], wumpus[1]))
         return True
@@ -238,8 +240,9 @@ class Nerve:
                     for j in self.newMove((i[0], i[1])):
                         self.estimate[(j[0], j[1])][1] = 0
                         if self.estimate[(j[0], j[1])] == [0, 0]:
-                            self.safe.append((j[0], j[1]))
                             self.view[(j[0], j[1])] = []
+                            if (j[0], j[1]) not in self.safe:
+                                self.safe.append((j[0], j[1]))
         # print("Estimate after killing" + Fore.CYAN, wumpus, Fore.WHITE + "is ", self.estimate)
         # self.agentMap() 
         
@@ -278,20 +281,22 @@ class Nerve:
     
     def killWumpus(self):
         # search for possible wumpus in estimate: estimate[1] > 1
-        self.wumpus = [i for i in self.estimate if self.estimate[i][1] > 1 and self.estimate[i][0] == 0]
-        # print(Fore.RED + "Possible wumpus: " + Fore.WHITE, self.wumpus)
-        if not self.wumpus:
+        max_stench = max([self.estimate[i][1] for i in self.estimate])
+        if max_stench == 0:
             return False
+        self.wumpus = [i for i in self.estimate if self.estimate[i][1] == max_stench]
+        # print(Fore.RED + "Possible wumpus: " + Fore.WHITE, self.wumpus)
         self.travelWumpus(self.interactive.getPlayerPosition())
         return True    
     def solve(self):
         self.interactive.gameStart() # donot modify this line
         player = self.interactive.getPlayerPosition()
         self.safe = [(player[0], player[1])]
+        
+        
         while not self.interactive.isEnd:
             self.interactive.debug()
             player = self.interactive.getPlayerPosition()
-            # print(Fore.GREEN + "Safe position" + Fore.WHITE, self.safe)
             
             # print(Fore.YELLOW + "\nPlayer is at" + Fore.WHITE, player)
             self.view[(player[0], player[1])] = self.interactive.getCellView()
@@ -300,26 +305,30 @@ class Nerve:
             # print("Estimate position", self.estimate)
             if self.interactive.isNone():
                 for i in self.newMove((player[0], player[1])):
-                    self.safe.append((i[0], i[1]))
+                    if (i[0], i[1]) not in self.safe:
+                        self.safe.append((i[0], i[1]))
             # print(Fore.CYAN + "Estimate: " + Fore.WHITE, self.estimate)                
             # print(Fore.CYAN + "View: " + Fore.WHITE, self.view)                
                     
+            # print(Fore.WHITE + "Safe position" + Fore.WHITE, self.safe)
             previous = player
-            # print(previous)
-            # print(self.safe)
+            print(previous)
             self.safe.remove((previous[0], previous[1]))
+            # print(Fore.GREEN + "Safe position" + Fore.WHITE, self.safe)
             if self.travelNextMove(previous):
+                # print("Move to safe position")
                 continue
             else:
+                # print("Cannot move to safe position")
                 # TODO shoot the possible wumbus
                 if (self.killWumpus()):
-                    # print("Let's go")
+                    # print("I may kill a wumpus")
                     continue
                 print(Fore.GREEN + "\nTry to escape" + Fore.WHITE)
                 self.escape()
                 self.interactive.isEnd = True
-        print(Fore.GREEN + "\n\nWhat i have view: ")
-        print(self.view)
+        # print(Fore.GREEN + "\n\nWhat i have view: ")
+        # print(self.view)
         self.agentMap() 
         self.interactive.gameEnd()
         return self.interactive.getLogs() # donot modify this line
