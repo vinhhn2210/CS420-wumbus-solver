@@ -419,6 +419,8 @@ class DPLLAlgo:
                 if isWumpus == False:
                     print("No Wumpus Left, No Move Left")
 
+                    
+
                     break
             else:
                 self.moveToNextStep(curPos, visited, newRoomDict)

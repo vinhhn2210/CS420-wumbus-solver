@@ -20,27 +20,21 @@ class InteractiveGame:
     def getLogs(self):
         return self.logs
 
+    def isGoal(self):
+        return self.playerPosition[0] == 0 and self.playerPosition[1] == 0
+
     def loadMap(self, mapState):
         self.size = mapState.nSize
         self.mazer = copy.deepcopy(mapState.mazer)  
         self.explored = [[False for i in range(self.size)] for j in range(self.size)]
+        self.playerPosition = mapState.initialPos
 
     def gameStart(self):
         self.score = 0
         self.isEnd = False
         self.logs = []
         self.explored = [[False for i in range(self.size)] for j in range(self.size)]
-        # get random position for player which is valid
-        # while True:
-        #     x = random.randint(0, self.size -1)
-        #     y = random.randint(0, self.size -1)
-        #     if self.mazer[x][y] == '-':
-        #         self.playerPosition = (x, y, 0)
-        #         break
-        # self.explored[x][y] = True
-        
-        self.playerPosition = (3, 0, 0)
-        self.explored[3][0] = True
+        self.explored[self.playerPosition[0]][self.playerPosition[1]] = True
         self.flushLog()
         return self.playerPosition
     

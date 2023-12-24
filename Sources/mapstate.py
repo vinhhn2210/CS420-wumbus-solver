@@ -11,7 +11,9 @@ class MapState:
         self.mazer = copy.deepcopy(mazer)
         # self.initialPos = generatePlayer(mazer, nSize)
         # self.initialPos = (3, 0, 'R')
-        self.initialPos = (3, 0)
+        self.initialPos = (3, 0, 0)
+        # flip map vertically
+        self.mazer = self.mazer[::-1]
         for i in range(nSize):
             for j in range(nSize):
                 if self.mazer[i][j] != 'W' and self.mazer[i][j] != 'P':
@@ -37,7 +39,13 @@ class MapState:
                     self.mazer[i][j] = '-'
                 if len(self.mazer[i][j]) > 1 and '-' in self.mazer[i][j]:
                     self.mazer[i][j] = self.mazer[i][j].replace('-', '')
-            
+        # get random position for player which is valid
+        while True:
+            x = random.randint(0, self.nSize -1)
+            y = random.randint(0, self.nSize -1)
+            if self.mazer[x][y] == '-':
+                self.initialPos = (x, y, 0)
+                break
     def printMap(self):
         print('Map name: ' + self.name)
         print('Map size: ' + str(self.nSize) + ' x ' + str(self.nSize))
