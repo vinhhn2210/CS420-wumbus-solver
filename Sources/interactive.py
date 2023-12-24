@@ -10,6 +10,7 @@ class InteractiveGame:
         self.score = 0
         self.isEnd = False
         self.logs = []
+        self.jsonLogs = {}
         self.directions = {'UP': 0, 'RIGHT': 1, 'DOWN': 2, 'LEFT': 3}
         self.dx = [-1, 0, 1, 0]
         self.dy = [0, 1, 0, -1]
