@@ -145,10 +145,10 @@ class InteractiveGame:
                 return True
         return False
     
-    def isStench(self, x, y):
+    def isStenchVisionView(self, x, y):
         return self.explored[x][y] == True and 'S' in self.mazer[x][y]
     
-    def isBreeze(self, x, y):
+    def isBreezeVisionView(self, x, y):
         return self.explored[x][y] == True and 'B' in self.mazer[x][y]
 
     def isNone(self):
