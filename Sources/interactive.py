@@ -215,7 +215,7 @@ class InteractiveGame:
             # check if this room connect with wumpus
             noWumpus = True
             for j in self.connectedRooms(i[0], i[1]):
-                if self.mazer[j[0]][j[1]] == 'W':
+                if 'W' in self.mazer[j[0]][j[1]]:
                     noWumpus = False
                     break
             if noWumpus:
