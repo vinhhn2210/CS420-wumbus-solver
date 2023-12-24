@@ -2,6 +2,8 @@ import copy
 from queue import Queue
 from interactive import *
 
+numClauses = 0
+
 class KnowledgeBase:
     def __init__(self):
         self.clauses = []
@@ -42,7 +44,7 @@ class DPLLAlgo:
         self.interactive = InteractiveGame()
         self.interactive.loadMap(mapState)
 
-        self.mapSize = 4
+        self.mapSize = mapState.nSize
 
         self.KB = KnowledgeBase()
 
@@ -150,6 +152,9 @@ class DPLLAlgo:
         return maxLiteral, -1
 
     def DPLL(self, clauses, symbols, model):
+        global numClauses
+        numClauses += 1
+
         removeClauses = []
         for clause in clauses:
             valueUnknown = True
@@ -252,6 +257,48 @@ class DPLLAlgo:
 
         print('Path: ', path)
 
+    def shootWumpus(self, direction):
+        DIR = ('UP', 'DOWN', 'LEFT', 'RIGHT')
+        DIR_VAL = ((-1, 0), (1, 0), (0, -1), (0, 1))
+
+        self.interactive.changeDirection(direction)  
+        isShootWumpusSucessful = self.interactive.shootArrow()   
+
+        if isShootWumpusSucessful == True:
+            curPos = self.interactive.getPlayerPosition()
+            newPos = [curPos[0], curPos[1]]
+
+            for i in range(4):
+                if DIR[i] == direction:
+                    newPos[0] += DIR_VAL[i][0]
+                    newPos[1] += DIR_VAL[i][1]
+                    break
+
+            # Remove Wumpus in current position
+            wumpusLiteral = f'W_{newPos[0]}_{newPos[1]}'
+            self.removeClauseFromKB(wumpusLiteral, 1)
+
+            # Remove Stench in adjacent room
+            adjacentRooms = self.getAdjacentRoomList(newPos[0], newPos[1])
+            for room in adjacentRooms:
+                if self.interactive.isStenchVisionView(room[0], room[1]) == 0:
+                    stenchLiteral = f'S_{room[0]}_{room[1]}'
+                    self.removeClauseFromKB(stenchLiteral, 1)
+                    self.addClauseToKB(stenchLiteral, -1)
+
+            # Add No Wumpus at current position after shooting
+            wumpusLiteral = f'W_{newPos[0]}_{newPos[1]}'
+            self.addClauseToKB(wumpusLiteral, -1)
+
+            # Add No Pit at current position after shooting
+            pitLiteral = f'P_{newPos[0]}_{newPos[1]}'
+            self.addClauseToKB(pitLiteral, -1)
+
+            print('######## Shoot Wumpus Successful at: ', newPos)
+            return True
+
+        return False
+
     def findWumpusToShoot(self, start, visited, wumpusRooms):
         queue = []
         queue.append(start)
@@ -301,35 +348,116 @@ class DPLLAlgo:
         for i in range(len(path) - 1):
             self.interactive.moveImmediately(path[i])
 
-        self.interactive.changeDirection(path[len(path) - 1])  
-        isShootWumpusSucessful = self.interactive.shootArrow()   
+        isShoot = self.shootWumpus(path[len(path) - 1])
+        if isShoot == True:
+            print('Path To Kill Wumpus: ', path)
 
-        if isShootWumpusSucessful == True:
-            curPos = self.interactive.getPlayerPosition()
-            newPos = [curPos[0], curPos[1]]
+        return True
 
-            for i in range(4):
-                if DIR[i] == path[len(path) - 1]:
-                    newPos[0] += DIR_VAL[i][0]
-                    newPos[1] += DIR_VAL[i][1]
-                    break
+    def goToExit(self, start, visited):
+        queue = []
+        queue.append(start)
 
-            # Remove Wumpus in current position
-            wumpusLiteral = f'W_{newPos[0]}_{newPos[1]}'
-            self.removeClauseFromKB(wumpusLiteral, 1)
+        dist = {}
+        pre = {}
+        dist[start] = 0
 
-            # Remove Stench in adjacent room
-            adjacentRooms = self.getAdjacentRoomList(newPos[0], newPos[1])
-            for room in adjacentRooms:
-                stenchLiteral = f'S_{room[0]}_{room[1]}'
-                self.removeClauseFromKB(stenchLiteral, 1)
+        while queue:
+            curRoom = queue.pop(0)
+            nextRooms = self.getAdjacentRoomList(curRoom[0], curRoom[1])
 
-            # Add No Wumpus at current position after shooting
-            wumpusLiteral = f'W_{newPos[0]}_{newPos[1]}'
-            self.addClauseToKB(wumpusLiteral, -1)
+            for i in nextRooms:
+                X, Y = i
 
-        print('Path To Kill Wumpus: ', path)
-        print('######## Shoot Wumpus Successful')
+                if visited.get((X, Y)) == True:
+                    if dist.get((X, Y)) == None:
+                        dist[(X, Y)] = dist[curRoom] + 1
+                        pre[(X, Y)] = curRoom
+                        queue.append((X, Y))
+
+        resRoom = None
+        if dist.get((0, 0)) == None:
+            return False
+
+        resRoom = (0, 0)
+
+        DIR = ('UP', 'DOWN', 'LEFT', 'RIGHT')
+        DIR_VAL = ((-1, 0), (1, 0), (0, -1), (0, 1))
+
+        path = []
+        while resRoom != None:
+            if pre.get(resRoom) != None:
+                preRoom = pre[resRoom]
+
+                for i in range(4):
+                    if DIR_VAL[i][0] == resRoom[0] - preRoom[0] and DIR_VAL[i][1] == resRoom[1] - preRoom[1]:
+                        path.append(DIR[i])
+                        break
+
+            resRoom = pre.get(resRoom)
+
+        path.reverse()
+        for i in path:
+            self.interactive.moveImmediately(i)
+
+        print('Path: ', path)
+        return True
+
+    def findStenchToShootWumpus(self, start, visited):
+        queue = []
+        queue.append(start)
+
+        dist = {}
+        pre = {}
+        dist[start] = 0
+
+        while queue:
+            curRoom = queue.pop(0)
+            nextRooms = self.getAdjacentRoomList(curRoom[0], curRoom[1])
+
+            for i in nextRooms:
+                X, Y = i
+
+                if visited.get((X, Y)) == True:
+                    if dist.get((X, Y)) == None:
+                        dist[(X, Y)] = dist[curRoom] + 1
+                        pre[(X, Y)] = curRoom
+                        queue.append((X, Y))
+
+        resRoom = None
+        for i in visited:
+            if dist.get(i) != None:
+                if self.roomDict.get(f'S_{i[0]}_{i[1]}') != None:
+                    if self.roomDict[f'S_{i[0]}_{i[1]}'] == 1:
+                        if resRoom == None or dist[resRoom] > dist[i]:
+                            resRoom = i
+
+        if resRoom == None:
+            return False
+
+        DIR = ('UP', 'DOWN', 'LEFT', 'RIGHT')
+        DIR_VAL = ((-1, 0), (1, 0), (0, -1), (0, 1))
+
+        path = []
+        while resRoom != None:
+            if pre.get(resRoom) != None:
+                preRoom = pre[resRoom]
+
+                for i in range(4):
+                    if DIR_VAL[i][0] == resRoom[0] - preRoom[0] and DIR_VAL[i][1] == resRoom[1] - preRoom[1]:
+                        path.append(DIR[i])
+                        break
+
+            resRoom = pre.get(resRoom)
+
+        path.reverse()
+        for i in path:
+            self.interactive.moveImmediately(i)
+
+        print('Path: ', path)
+
+        for X in DIR:
+            self.shootWumpus(X)
 
         return True
 
@@ -339,6 +467,8 @@ class DPLLAlgo:
         while not self.interactive.isEnd:
             curAgentState = self.interactive.getPlayerPosition()
             curPos = (curAgentState[0], curAgentState[1])
+
+            print("Number of Clauses: ", len(self.KB.clauses))
 
             visited[curPos] = True
 
@@ -409,7 +539,7 @@ class DPLLAlgo:
                             pitLiteral = f'P_{X}_{Y}'
                             self.addClauseToKB(pitLiteral, 1)
 
-            print("Current Position: ", curPos)
+            self.interactive.debug()
             print("Next Valid Room: ", newRoomDict)
 
             if len(newRoomDict) == 0:
@@ -417,11 +547,22 @@ class DPLLAlgo:
                 isWumpus = self.findWumpusToShoot(curPos, visited, wumpusRoomDict)
 
                 if isWumpus == False:
-                    print("No Wumpus Left, No Move Left")
+                    print("######No Wumpus To Shoot, Let's Find Stench To Shoot######")
+                    isGoToStench = self.findStenchToShootWumpus(curPos, visited)
 
-                    
+                    if isGoToStench == False:
+                        print("No Wumpus Left, No Move Left")
 
-                    break
+                        isGoToExit = self.goToExit(curPos, visited)
+
+                        if isGoToExit == False:
+                            print("No Path To Exit")
+                        else:
+                            self.interactive.gameEnd()
+
+                        # for i in self.KB.clauses:
+                        #     print(i)
+                        break                        
             else:
                 self.moveToNextStep(curPos, visited, newRoomDict)
 
