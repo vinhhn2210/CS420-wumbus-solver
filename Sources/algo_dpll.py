@@ -198,7 +198,7 @@ class DPLLAlgo:
             return True
         
         model[symbol] = -value
-        return DPLL(clauses, symbols, model)
+        return self.DPLL(clauses, symbols, model)
 
     def DPLLSatisfiable(self, clauses):
         symbols = {}
