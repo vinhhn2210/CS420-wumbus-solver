@@ -16,7 +16,8 @@ class MapState:
         self.mazer = self.mazer[::-1]
         for i in range(nSize):
             for j in range(nSize):
-                if self.mazer[i][j] != 'W' and self.mazer[i][j] != 'P':
+                #if self.mazer[i][j] != 'W' and self.mazer[i][j] != 'P':
+                if True:
                     # check if there is a pit in 4 adjacent cells
                     if i > 0 and self.mazer[i - 1][j] == 'P':
                         self.mazer[i][j] += 'B'
