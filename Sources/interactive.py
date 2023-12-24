@@ -174,6 +174,7 @@ class InteractiveGame:
             self.mazer[nextX][nextY] = self.mazer[nextX][nextY].replace('W', '')
             if len(self.mazer[nextX][nextY]) == 0:
                 self.mazer[nextX][nextY] = '-'
+            self.explored[nextX][nextY] = True
             self.killWumpus(nextX, nextY)
             # print(Fore.RED + "You killed the Wumpus!")
             # MapState('agentMap', self.size, self.mazer).printMap()
