@@ -10,16 +10,69 @@ class InteractiveGame:
         self.score = 0
         self.isEnd = False
         self.logs = []
-        self.jsonLogs = {}
         self.directions = {'UP': 0, 'RIGHT': 1, 'DOWN': 2, 'LEFT': 3}
         self.dx = [-1, 0, 1, 0]
         self.dy = [0, 1, 0, -1]
+        self.jsonData = {}
     
     def flushLog(self):
         self.logs.append(self.playerPosition + (self.score, ))
+        self.jsonData[str(len(self.logs))] = {
+            "mapSize": self.size,
+            "map": self.mazer[::-1],
+            "agent": [self.playerPosition[0], self.playerPosition[1], self.playerPosition[2], self.score],
+        }
+
+    def debug(self):
+        print('player position:', self.playerPosition, 'score:', self.score)
+        debugMaze = copy.deepcopy(self.mazer)
+        debugMaze[self.playerPosition[0]][self.playerPosition[1]].append('A')
+        for i in range(self.size):
+            for j in range(self.size):
+                for ch in debugMaze[i][j]:
+                    if ch == 'S':
+                        print(Fore.RED + ch, end = '')
+                    elif ch == 'W':
+                        print(Fore.GREEN + ch, end = '')
+                    elif ch == 'G':
+                        print(Fore.YELLOW + ch, end = '')
+                    elif ch == 'P':
+                        print(Fore.MAGENTA + ch, end = '')
+                    elif ch == 'B':
+                        print(Fore.CYAN + ch, end = '')
+                    elif ch == '-':
+                        print(Fore.WHITE + ch, end = '')
+                    elif ch == 'A':
+                        print(Fore.BLUE + ch, end = '')
+                print(Fore.WHITE + ' ', end = '\t')
+            print(end = '\t\t')
+            for j in range(self.size):
+                if self.explored[i][j] == False:
+                    print(Fore.WHITE + 'X', end = '\t')
+                    continue
+                for ch in debugMaze[i][j]:
+                    if ch == 'S':
+                        print(Fore.RED + ch, end = '')
+                    elif ch == 'W':
+                        print(Fore.GREEN + ch, end = '')
+                    elif ch == 'G':
+                        print(Fore.YELLOW + ch, end = '')
+                    elif ch == 'P':
+                        print(Fore.MAGENTA + ch, end = '')
+                    elif ch == 'B':
+                        print(Fore.CYAN + ch, end = '')
+                    elif ch == '-':
+                        print(Fore.WHITE + ch, end = '')
+                    elif ch == 'A':
+                        print(Fore.BLUE + ch, end = '')
+                print(Fore.WHITE + ' ', end = '\t')
+            print()
 
     def getLogs(self):
         return self.logs
+
+    def getJsonLogs(self, mapName, agentPath, algorithm):
+        return self.jsonData
 
     def isGoal(self):
         return self.playerPosition[0] == 0 and self.playerPosition[1] == 0
@@ -37,6 +90,15 @@ class InteractiveGame:
         self.explored = [[False for i in range(self.size)] for j in range(self.size)]
         self.explored[self.playerPosition[0]][self.playerPosition[1]] = True
         self.flushLog()
+        self.jsonData = {
+            "0": {
+                "time": 0,
+                "memory": 0,
+                "mapSize": self.size,
+                "map": self.mazer[::-1],
+                "agent": [self.playerPosition[0], self.playerPosition[1], self.playerPosition[2], self.score],
+            },
+        }
         return self.playerPosition
     
     
