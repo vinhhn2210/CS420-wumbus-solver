@@ -18,6 +18,9 @@ class Cell():
 		self.chestSize = (cellSize[0] * 90 / 100, cellSize[1] * 120 / 100)
 		self.chestCoord = self.getItemCoord(self.chestSize)
 
+		self.exitSize = (cellSize[0] * 70 / 100, cellSize[1] * 100 / 100)
+		self.exitCoord = self.getItemCoord(self.exitSize)
+
 		self.wumpusSize = (cellSize[0] * 90 / 100, cellSize[1] * 120 / 100)
 		self.wumpusCoord = self.getItemCoord(self.wumpusSize)
 
@@ -36,6 +39,8 @@ class Cell():
 
 		self.chestImage = pygame.transform.scale(Const.CELL_IMAGE_CHEST, self.chestSize) 
 
+		self.exitImage = pygame.transform.scale(Const.CELL_IMAGE_EXIT, self.exitSize) 
+
 		self.wumpusImage = pygame.transform.scale(Const.CELL_IMAGE_CHEST, self.wumpusSize) 
 
 		self.pitImage = pygame.transform.scale(Const.CELL_IMAGE_PIT, self.cellSize) 
@@ -43,16 +48,16 @@ class Cell():
 		# Stench, Breeze Text
 		self.stenchText = TextClass.Text(
 			Const.VCR_OSD_MONO_FONT,
-			Const.WHITE,
-			20,
+			Const.RED,
+			70,
 			"S",
 			(cellCoord[0], cellCoord[1], cellSize[0], cellSize[1])
 		)
 
 		self.breezeText = TextClass.Text(
 			Const.VCR_OSD_MONO_FONT,
-			Const.WHITE,
-			20,
+			Const.RED,
+			70,
 			"B",
 			(cellCoord[0], cellCoord[1], cellSize[0], cellSize[1])
 		)
@@ -65,6 +70,7 @@ class Cell():
 		self.isPit = False
 		self.isStench = False
 		self.isBreeze = False
+		self.isExit = False
 
 	def getItemCoord(self, itemSize):
 		itemCoord = (self.cellCoord[0] + (self.cellSize[0] - itemSize[0]) / 2, self.cellCoord[1] + self.cellSize[1] * 60 / 100 - itemSize[1])
@@ -77,6 +83,9 @@ class Cell():
 
 	def updateExplored(self, value):
 		self.isExplored = value
+
+	def updateExit(self, value):
+		self.isExit = value
 
 	def updateChest(self, value):
 		self.chestID = value
@@ -108,6 +117,9 @@ class Cell():
 
 		if self.isAgent == True:
 			gameScreen.blit(self.rect_surface, (self.rect_dimensions[0], self.rect_dimensions[1]))
+
+		if self.isExit == True:
+			gameScreen.blit(self.exitImage, self.exitCoord)
 
 		if self.isChest == True:
 			gameScreen.blit(self.chestImage, self.chestCoord)

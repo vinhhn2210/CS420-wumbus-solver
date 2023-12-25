@@ -135,7 +135,7 @@ class InGame:
 		data = json.load(jsonFile)
 
 		# Initial Map
-		self.mapSize = (4, 4)
+		self.mapSize = (data['0']['mapSize'], data['0']['mapSize'])
 		self.map = data["0"]["map"]
 		self.mapVision = data['0']['vision']
 
@@ -145,7 +145,10 @@ class InGame:
 
 		# Initial Agent
 		X, Y, direction, score = data["0"]["agent"]
+		X = self.mapSize[0] - X - 1
+
 		self.agent = AgentClass.Agent(self.gameMap.getCell(X, Y))
+		self.agent.updateDirection(direction)
 
 		# Json Data
 		self.jsonData = data
@@ -165,18 +168,29 @@ class InGame:
 		# self.memoryText.changeTextContent(f'Memory: {curMem}MB')
 
 		X, Y, direction, score = self.jsonData[f"{self.step}"]["agent"]
+		X = self.mapSize[0] - X - 1
+		print("Step: ", X, Y)
+		self.agent.updateDirection(direction)
+
 		self.mapVision = self.jsonData[f'{self.step}']['vision']
 
 		# self.scoreText.changeTextContent(f"Score: {score}")
 
 		if self.mapVision[X][Y] != 'X':
 			self.gameMap.getCell(X, Y).updateExplored(True)
+
+			if X == self.mapSize[0] - 1 and Y == 0:
+				self.gameMap.getCell(X, Y).updateExit(True)
+				print("OKEI HERE")
+
 			if 'S' in self.mapVision[X][Y]:
 				self.gameMap.getCell(X, Y).updateStench(True)
 			if 'B' in self.mapVision[X][Y]:
 				self.gameMap.getCell(X, Y).updateBreeze(True)
-			if 'B' in self.mapVision[X][Y]:
-				self.gameMap.getCell(X, Y).updateBreeze(True)
+			if 'W' in self.mapVision[X][Y]:
+				self.gameMap.getCell(X, Y).updateWumpus(True)
+			if 'P' in self.mapVision[X][Y]:
+				self.gameMap.getCell(X, Y).updatePit(True)
 
 		self.gameMap.getCell(X, Y).updateAgent(True)
 		self.agent.updateAgentCell(self.gameMap.getCell(X, Y))	

@@ -48,12 +48,11 @@ class Agent:
 			elif self.agentCoord[i] > targetPos[i]:
 				self.agentCoord[i] -= moveDistance
 
-	def updateAgentCell(self, newCell):
-		if newCell.cellID[1] > self.agentCell.cellID[1]:
-			self.animationDirection = 1
-		elif newCell.cellID[1] < self.agentCell.cellID[1]:
-			self.animationDirection = 0
+	def updateDirection(self, direction):
+		self.animationDirection = direction
+		# print("Direction: ", direction)
 
+	def updateAgentCell(self, newCell):
 		self.agentCell = newCell
 
 	def handleEvent(self):

@@ -31,14 +31,16 @@ CELL_IMAGE_CHEST = pygame.image.load(f'Assets/Images/InGame/Cell/chest.png')
 CELL_IMAGE_UNEXPLORED = pygame.image.load(f'Assets/Images/InGame/Cell/unexplored-tile.png')
 CELL_IMAGE_PIT = pygame.image.load(f'Assets/Images/InGame/Cell/pit.png')
 CELL_IMAGE_WUMPUS = pygame.image.load(f'Assets/Images/InGame/Cell/wumpus.png')
+CELL_IMAGE_EXIT = pygame.image.load(f'Assets/Images/InGame/Cell/exit.png')
 
 COLOR_AGENT = (228, 185, 36)
 
+# {'UP': 0, 'RIGHT': 1, 'DOWN': 2, 'LEFT': 3}
 AGENT_FRAME_LIST = [
-	[pygame.image.load(f'Assets/Images/InGame/Agent/agent-left-{j}.png') for j in range(3)],
+	[pygame.image.load(f'Assets/Images/InGame/Agent/agent-up-{j}.png') for j in range(3)],
 	[pygame.image.load(f'Assets/Images/InGame/Agent/agent-right-{j}.png') for j in range(3)],
 	[pygame.image.load(f'Assets/Images/InGame/Agent/agent-down-{j}.png') for j in range(3)],
-	[pygame.image.load(f'Assets/Images/InGame/Agent/agent-up-{j}.png') for j in range(3)],
+	[pygame.image.load(f'Assets/Images/InGame/Agent/agent-left-{j}.png') for j in range(3)],
 ]
 
 
