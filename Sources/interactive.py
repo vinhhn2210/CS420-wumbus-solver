@@ -20,9 +20,15 @@ class InteractiveGame:
 
     def flushLog(self):
         self.logs.append((self.playerPosition[0], self.playerPosition[1], self.flipDirection(self.playerPosition[2]), self.score))
-        self.jsonData[str(len(self.logs))] = {
+        visionMaze = copy.deepcopy(self.mazer)
+        for i in range(self.size):
+            for j in range(self.size):
+                if self.explored[i][j] == False:
+                    visionMaze[i][j] = 'X'
+        self.jsonData[str(len(self.logs) - 1)] = {
             "mapSize": self.size,
             "map": self.mazer[::-1],
+            "vision": visionMaze[::-1],
             "agent": [self.playerPosition[0], self.playerPosition[1], self.flipDirection(self.playerPosition[2]), self.score],
         }
 
@@ -93,12 +99,18 @@ class InteractiveGame:
         self.explored = [[False for i in range(self.size)] for j in range(self.size)]
         self.explored[self.playerPosition[0]][self.playerPosition[1]] = True
         self.flushLog()
+        visionMaze = copy.deepcopy(self.mazer)
+        for i in range(self.size):
+            for j in range(self.size):
+                if self.explored[i][j] == False:
+                    visionMaze[i][j] = 'X'
         self.jsonData = {
             "0": {
                 "time": 0,
                 "memory": 0,
                 "mapSize": self.size,
                 "map": self.mazer[::-1],
+                "vision": visionMaze[::-1],
                 "agent": [self.playerPosition[0], self.playerPosition[1], self.playerPosition[2], self.score],
             },
         }
