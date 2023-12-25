@@ -147,7 +147,7 @@ class Menu:
         importText = TextClass.Text(
             Const.AMATICSC_FONT,
             Const.BROWN,
-            35,
+            40,
             "Import Map",
             (importCoord[0], importCoord[1] + importSize[1] * 12 / 100, importSize[0], importSize[1] * 15 / 100)
         )
@@ -156,7 +156,7 @@ class Menu:
         fileDialogButton = ButtonClass.Button(
             (importSize[0] * 30 / 100, importSize[1] * 12 / 100),
             Const.DROPBOX_IMAGE,
-            (importCoord[0], importCoord[1] + importSize[1] * 27 / 100, importSize[0], importSize[1] * 15 / 100)
+            (importCoord[0], importCoord[1] + importSize[1] * 35 / 100, importSize[0], importSize[1] * 15 / 100)
         )
         fileDialogText = TextClass.Text(
             Const.AMATICSC_FONT,
@@ -168,8 +168,8 @@ class Menu:
 
         algoTuple = ['DPLL', 'Nerve']
         algoID = -1
-        algoCoord = (importCoord[0] + importSize[0] * 10 / 100, importCoord[1] + importSize[1] * 60 / 100)
-        algoSize = ((importSize[0] - importSize[0] * 20 / 100) / 4, importSize[1] * 8 / 100)
+        algoCoord = (importCoord[0] + importSize[0] * 10 / 100, importCoord[1] + importSize[1] * 55 / 100)
+        algoSize = ((importSize[0] - importSize[0] * 20 / 100) / 2, importSize[1] * 10 / 100)
         algoButton = []
         algoText = []
         for i in range(2):  
@@ -262,7 +262,7 @@ class Menu:
             fileDialogText.draw(self.gameScreen)
             importText.draw(self.gameScreen)
             processText.draw(self.gameScreen)
-            for i in range(len(algoTuple[levelID])):
+            for i in range(len(algoTuple)):
                 if i == algoID:
                     algoButton[i].fillColor(self.gameScreen)
                 else:
