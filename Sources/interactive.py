@@ -20,7 +20,9 @@ class InteractiveGame:
             return 2
         elif (direction == 2):
             return 0
-
+        else:
+            return direction
+    
     def appendKBLog(self, log):
         self.KBlogs.append(log)
 
