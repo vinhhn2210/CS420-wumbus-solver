@@ -1,10 +1,8 @@
 import pygame
 import Const
-import PortalClass
 
 class Agent:
-	def __init__(self, agentID, curCell):
-		self.agentID = agentID
+	def __init__(self, curCell):
 		self.agentCell = curCell
 		self.agentSize = (curCell.cellSize[0] * 4 / 7, curCell.cellSize[1] * 7 / 7)
 		self.agentPadding = curCell.cellSize[1] * 30 / 100
@@ -16,9 +14,9 @@ class Agent:
 
 		# Agent Animation
 		self.agentFrame = [[
-			pygame.transform.scale(Const.AGENT_FRAME_LIST[self.agentID - 1][i][j], self.agentSize)
-				for j in range(len(Const.AGENT_FRAME_LIST[self.agentID - 1][i]))] 
-			for i in range(len(Const.AGENT_FRAME_LIST[self.agentID - 1]))]
+			pygame.transform.scale(Const.AGENT_FRAME_LIST[i][j], self.agentSize)
+				for j in range(len(Const.AGENT_FRAME_LIST[i]))] 
+			for i in range(len(Const.AGENT_FRAME_LIST))]
 
 		for i in range(len(self.agentFrame)):
 			for j in range(len(self.agentFrame[i])):

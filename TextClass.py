@@ -11,6 +11,8 @@ class Text:
 		textWidth = self.textFont.size(textContent)[0]
 		self.textCoord = (containerInfo[0] + (containerInfo[2] - textWidth) / 2, containerInfo[1] + (containerInfo[3] - textHeight) / 2)
 		self.leftToRightTextCoord = (containerInfo[0], containerInfo[1] + (containerInfo[3] - textHeight) / 2)
+		self.bottomRightTextCoord = (containerInfo[0] + containerInfo[2] - textWidth, containerInfo[1] + containerInfo[3] - textHeight)
+		self.upLeftTextCoord = (containerInfo[0], containerInfo[1])
 
 	def changeTextContent(self, newContent):
 		self.text = self.textFont.render(newContent, True, self.textColor)
@@ -24,3 +26,9 @@ class Text:
 
 	def drawLeftToRight(self, gameScreen):
 		gameScreen.blit(self.text, self.leftToRightTextCoord)
+
+	def drawBottomRight(self, gameScreen):
+		gameScreen.blit(self.text, self.bottomRightTextCoord)
+
+	def drawUpLeft(self, gameScreen):
+		gameScreen.blit(self.text, self.upLeftTextCoord)

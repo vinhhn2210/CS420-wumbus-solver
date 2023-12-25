@@ -10,6 +10,9 @@ class Map:
 		self.M, self.N = (mapLen[0], mapLen[1])
 		self.mapData = mapData
 
+		print(self.M, self.N)
+		print(mapData)
+
 		cellSize = (self.mapSize[0] / self.N, self.mapSize[1] / self.M)
 
 		# self.mapData = mapData
@@ -19,10 +22,10 @@ class Map:
 		for i in range(self.M):
 			mapImageRow = []
 			for j in range(self.N):
-				if self.mapData[i][j] == "-1": 
-					mapImageRow.append(CellClass.ObstacleCell(cellSize, (j * cellSize[0] + self.mapCoord[0], i * cellSize[1] + self.mapCoord[1]), (i, j)))
+				if self.mapData[i][j] == "X": 
+					mapImageRow.append(CellClass.Cell(cellSize, (j * cellSize[0] + self.mapCoord[0], i * cellSize[1] + self.mapCoord[1]), (i, j), False))
 				else:
-					mapImageRow.append(CellClass.EmptyCell(cellSize, (j * cellSize[0] + self.mapCoord[0], i * cellSize[1] + self.mapCoord[1]), (i, j)))
+					mapImageRow.append(CellClass.Cell(cellSize, (j * cellSize[0] + self.mapCoord[0], i * cellSize[1] + self.mapCoord[1]), (i, j), True))
 
 			self.mapImage.append(mapImageRow)
 

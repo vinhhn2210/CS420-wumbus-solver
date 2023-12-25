@@ -3,7 +3,7 @@ import Const
 import ObjectClass
 import TextClass
 import ButtonClass
-# import InGame
+import InGameClass
 import sys
 sys.path.append('Sources')
 import system
@@ -317,8 +317,9 @@ class Menu:
 
             if startButtonState == True:
                 if self.algorithmID != -1:
-                    # ingame = InGame.InGame((self.mapID, self.levelID, self.algoTuple[self.levelID][self.algorithmID]))
-                    # ingame.run()
+                    print(self.algorithmID)
+                    ingame = InGameClass.InGame((self.mapID, self.algoTuple[self.algorithmID]))
+                    ingame.run()
                     break
 
             # Draw Window
