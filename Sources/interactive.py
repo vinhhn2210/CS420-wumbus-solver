@@ -30,7 +30,7 @@ class InteractiveGame:
                     visionMaze[i][j] = 'X'
         self.jsonData[str(len(self.logs) - 1)] = {
             "mapSize": self.size,
-            "map": self.mazer[::-1],
+            "map": copy.deepcopy(self.mazer[::-1]),
             "vision": visionMaze[::-1],
             "agent": [self.playerPosition[0], self.playerPosition[1], self.flipDirection(self.playerPosition[2]), self.score],
         }
@@ -112,7 +112,7 @@ class InteractiveGame:
                 "time": 0,
                 "memory": 0,
                 "mapSize": self.size,
-                "map": self.mazer[::-1],
+                "map": copy.deepcopy(self.mazer[::-1]),
                 "vision": visionMaze[::-1],
                 "agent": [self.playerPosition[0], self.playerPosition[1], self.playerPosition[2], self.score],
             },
