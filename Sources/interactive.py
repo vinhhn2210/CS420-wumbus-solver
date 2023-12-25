@@ -9,14 +9,17 @@ class InteractiveGame:
         self.playerPosition = (0, 0, 0) # (x, y, direction), direction = 0: up, 1: right, 2: down, 3: left
         self.score = 0
         self.isEnd = False
-        self.logs = []
         self.directions = {'UP': 0, 'RIGHT': 1, 'DOWN': 2, 'LEFT': 3}
         self.dx = [-1, 0, 1, 0]
         self.dy = [0, 1, 0, -1]
+        self.logs = []
         self.jsonData = {}
-    
+        self.KBlogs = []
     def flipDirection(self, direction):
         return (direction + 2) % 4
+
+    def appendKBLog(self, log):
+        self.KBlogs.append(log)
 
     def flushLog(self):
         self.logs.append((self.playerPosition[0], self.playerPosition[1], self.flipDirection(self.playerPosition[2]), self.score))
@@ -78,7 +81,7 @@ class InteractiveGame:
             print()
 
     def getLogs(self):
-        return self.logs, self.jsonData
+        return self.logs, self.jsonData, self.KBlogs
 
     def getJsonLogs(self):
         return self.jsonData
