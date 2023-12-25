@@ -9,18 +9,35 @@ class InteractiveGame:
         self.playerPosition = (0, 0, 0) # (x, y, direction), direction = 0: up, 1: right, 2: down, 3: left
         self.score = 0
         self.isEnd = False
-        self.logs = []
         self.directions = {'UP': 0, 'RIGHT': 1, 'DOWN': 2, 'LEFT': 3}
         self.dx = [-1, 0, 1, 0]
         self.dy = [0, 1, 0, -1]
+        self.logs = []
         self.jsonData = {}
+        self.KBlogs = []
+    def flipDirection(self, direction):
+        if (direction == 0):
+            return 2
+        elif (direction == 2):
+            return 0
+        else:
+            return direction
     
+    def appendKBLog(self, log):
+        self.KBlogs.append(log)
+
     def flushLog(self):
-        self.logs.append(self.playerPosition + (self.score, ))
-        self.jsonData[str(len(self.logs))] = {
+        self.logs.append((self.playerPosition[0], self.playerPosition[1], self.flipDirection(self.playerPosition[2]), self.score))
+        visionMaze = copy.deepcopy(self.mazer)
+        for i in range(self.size):
+            for j in range(self.size):
+                if self.explored[i][j] == False:
+                    visionMaze[i][j] = 'X'
+        self.jsonData[str(len(self.logs) - 1)] = {
             "mapSize": self.size,
-            "map": self.mazer[::-1],
-            "agent": [self.playerPosition[0], self.playerPosition[1], self.playerPosition[2], self.score],
+            "map": copy.deepcopy(self.mazer[::-1]),
+            "vision": visionMaze[::-1],
+            "agent": [self.playerPosition[0], self.playerPosition[1], self.flipDirection(self.playerPosition[2]), self.score],
         }
 
     def debug(self):
@@ -69,9 +86,9 @@ class InteractiveGame:
             print()
 
     def getLogs(self):
-        return self.logs
+        return self.logs, self.jsonData, self.KBlogs
 
-    def getJsonLogs(self, mapName, agentPath, algorithm):
+    def getJsonLogs(self):
         return self.jsonData
 
     def isGoal(self):
@@ -90,12 +107,18 @@ class InteractiveGame:
         self.explored = [[False for i in range(self.size)] for j in range(self.size)]
         self.explored[self.playerPosition[0]][self.playerPosition[1]] = True
         self.flushLog()
+        visionMaze = copy.deepcopy(self.mazer)
+        for i in range(self.size):
+            for j in range(self.size):
+                if self.explored[i][j] == False:
+                    visionMaze[i][j] = 'X'
         self.jsonData = {
             "0": {
                 "time": 0,
                 "memory": 0,
                 "mapSize": self.size,
-                "map": self.mazer[::-1],
+                "map": copy.deepcopy(self.mazer[::-1]),
+                "vision": visionMaze[::-1],
                 "agent": [self.playerPosition[0], self.playerPosition[1], self.playerPosition[2], self.score],
             },
         }

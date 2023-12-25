@@ -52,13 +52,32 @@ class SystemController:
             self.mapLists[mapName[:-4]] = loadMap(folderPath, mapName)
     
     def writeSolution(self, mapName, algorithm, solution):
-        with open(os.path.join(CUR_PATH, 'Solutions', 'result_' + mapName + '_' + algorithm + '.txt'), 'w') as f:
+        with open(os.path.join(CUR_PATH, 'Solutions', '[result]_' + mapName + '_' + algorithm + '.txt'), 'w') as f:
             f.write(str(len(solution)) + '\n')
             for step in solution:
                 f.write(str(step)[1: -1] + '\n')
 
         # add color to result_ + mapName + '_' + algorithm + '.txt
-        print('\t\t+ Result file: ' + '\033[93m' + 'result_' + mapName + '_' + algorithm + '.txt' + '\033[0m')
+        print('\t\t+ Result file: ' + '\033[93m' + '[result]_' + mapName + '_' + algorithm + '.txt' + '\033[0m')
+    
+    def writeKBsolution(self, mapName, algorithm, solution):
+        with open(os.path.join(CUR_PATH, 'Solutions', '[KB]_' + mapName + '_' + algorithm + '.txt'), 'w') as f:
+            f.write(str(len(solution)) + '\n')
+            for step in solution:
+                f.write(str(step) + '\n')
+
+        # add color to result_ + mapName + '_' + algorithm + '.txt
+        print('\t\t+ Result file: ' + '\033[93m' + '[KB]_' + mapName + '_' + algorithm + '.txt' + '\033[0m')
+
+    def writeJson(self, mapName, algorithm, solution):
+        with open(os.path.join(CUR_PATH, 'Solutions', '[visualize]_' + mapName + '_' + algorithm + '.json'), 'w') as f:
+            json_str = json.dumps(solution, indent=4)
+            json_str = re.sub(r"(?<=\[)[^\[\]]+(?=])", repl_func, json_str)
+            f.write(json_str)
+            # json.dump(solution, f)
+
+        # add color to result_ + mapName + '_' + algorithm + '.json
+        print('\t\t+ Result file: ' + '\033[93m' + '[visualize]_' + mapName + '_' + algorithm + '.json' + '\033[0m')
     
     def printMap(self, mapName):
         self.mapLists[mapName].printMap()
@@ -70,7 +89,7 @@ class SystemController:
 
     def solvingAllMap(self):
         for mapName in self.mapLists:
-            # algo_lists = ['nerd']
+            algo_lists = ['nerd']
             for algo in algo_lists:
                 self.solving(mapName, algo)
 
@@ -106,8 +125,9 @@ class SystemController:
             print('\t+ No solution found!')
             return None
 
-        self.writeSolution(mapName, algorithm, solution)
-
+        self.writeSolution(mapName, algorithm, solution[0])
+        self.writeJson(mapName, algorithm, solution[1])
+        self.writeKBsolution(mapName, algorithm, solution[2])
         # add color to mapname and algorith name
         mapName = '\033[94m' + mapName + '\033[0m'
         algorithm = '\033[92m' + algorithm + '\033[0m'
@@ -134,7 +154,7 @@ if __name__ == '__main__':
         print('Solving all map with all current algorithms...')
         system.solvingAllMap()
         
-        # mapName = 'm6'
+        # mapName = '4x4-sample'
         # algorithm = 'nerd'
         # system.solving(mapName, algorithm)
     elif sys.argv[2] == 'custom':
