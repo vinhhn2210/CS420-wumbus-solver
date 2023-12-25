@@ -80,7 +80,7 @@ class SystemController:
 
     def solvingAllMap(self):
         for mapName in self.mapLists:
-            # algo_lists = ['nerd']
+            algo_lists = ['nerd']
             for algo in algo_lists:
                 self.solving(mapName, algo)
 
@@ -144,7 +144,7 @@ if __name__ == '__main__':
         print('Solving all map with all current algorithms...')
         system.solvingAllMap()
         
-        # mapName = 'm6'
+        # mapName = '4x4-sample'
         # algorithm = 'nerd'
         # system.solving(mapName, algorithm)
     elif sys.argv[2] == 'custom':

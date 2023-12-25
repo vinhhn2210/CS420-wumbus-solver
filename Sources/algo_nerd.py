@@ -26,6 +26,40 @@ from interactive import *
 
 CONVERT = {'B': 1, 'S': 2, 'BS': 3}
 
+B = Fore.BLUE + "B" + Fore.WHITE
+S = Fore.RED + "S" + Fore.WHITE
+M = Fore.GREEN + "M" + Fore.WHITE
+W = Fore.MAGENTA + "~W" + Fore.WHITE
+P = Fore.CYAN + "~P" + Fore.WHITE
+
+class Nerd_KB:
+    def __init__(self):
+        self.knowledgeBase = {}
+    def initial(self, facts, position):
+        self.knowledgeBase[position] =  f'{facts}({position[0]}, {position[1]})'
+    def add_conjunct(self, facts, position, value):
+        self.knowledgeBase[position] += f' & {facts}({value[0]}, {value[1]})'
+    def add_entail(self, facts, position, value):
+        # check if > in the string knowledgeBase[position]
+        if '>' in self.knowledgeBase[position]:
+            self.knowledgeBase[position] += f' {facts}({value[0]}, {value[1]}) & '
+        else:
+            self.knowledgeBase[position] += f' => ({facts}({value[0]}, {value[1]}) & '
+    def close_entail(self, position):
+        if self.knowledgeBase[position][-2:] == "& ":
+            self.knowledgeBase[position] = self.knowledgeBase[position][:-3] + ")"
+        else:
+            self.knowledgeBase[position] += ')'
+    
+    def add(self, position, other_position):
+        if position not in self.knowledgeBase:
+            self.knowledgeBase[position] = f'{self.knowledgeBase[other_position]}'
+        else:
+            self.knowledgeBase[position] += f' & {self.knowledgeBase[other_position]}'
+        
+    def display(self):
+        for i in self.knowledgeBase:
+            print(self.knowledgeBase[i])
 
 class Nerd:
     def __init__(self, mapState):
@@ -37,6 +71,7 @@ class Nerd:
         # self.door = (mapState.nSize - 1, 0, 'DOWN')
         self.safe = []
         self.parent = {}
+        self.knowledgeBase = Nerd_KB()
         
 
     def possibleMove(self, playerPos):
@@ -145,32 +180,6 @@ class Nerd:
             # print(self.interactive.getPlayerPosition())
         return True
     
-    # def updateBS(self, player):
-    #     for i in self.newMove((player[0], player[1])):
-    #                 if self.interactive.isBreeze() and self.interactive.isStench():
-    #                     key = CONVERT['BS']
-    #                 elif self.interactive.isBreeze():
-    #                     key = CONVERT['B']
-    #                 else:
-    #                     key = CONVERT['S']
-    #         # TODO: change estimate to count the number of B, S, BS
-    #                 position = (i[0], i[1])
-    #                 if position in self.estimate:
-    #                     compare = key ^ self.estimate[position]
-    #                     # print(Fore.RED + "Compare", compare)
-    #                     if compare == 0 or key == 3:
-    #                         continue
-    #                     else:
-    #                         if self.estimate[position] == 3:
-    #                             self.estimate[position] = key
-    #                             continue
-    #                         else:
-    #                             self.safe.append(position)
-    #                             self.view[position] = []
-    #                             self.estimate[position] = 0
-    #                 else:
-    #                     self.estimate[position] = key
-    
     def findWumpus(self, previous):
         '''find the optimal possible wumpus'''
         visit = [(previous[0], previous[1], None, self.interactive.getScore())]
@@ -199,11 +208,11 @@ class Nerd:
             return None
     
     def travelWumpus(self, previous):
-        print("Travel to kill wumpus")
+        # print("Travel to kill wumpus")
         path = []
         current = self.findWumpus(previous)
         if (current == None):
-            print("No more wumpus to kill")
+            # print("No more wumpus to kill")
             return False
         while (current):
             path.append(current)
@@ -222,6 +231,8 @@ class Nerd:
             self.interactive.move(wumpus[2])
             self.interactive.shootArrow()
             self.interactive.move(wumpus[2])
+        player = self.interactive.getPlayerPosition()
+        self.knowledgeBase.initial(W, (wumpus[0], wumpus[1]))
         # print(Fore.BLUE + "May kill Wumpus at" + Fore.WHITE, wumpus)
         self.safe.append((wumpus[0], wumpus[1]))
         
@@ -250,14 +261,18 @@ class Nerd:
     
     def updateBS(self, player):
         # estimate = [B, S]
-        for i in self.newMove((player[0], player[1])):
-                    if self.interactive.isBreeze() and self.interactive.isStench():
-                        key = [1, 1]
-                    elif self.interactive.isBreeze():
-                        key = [1, 0]
-                    else:
-                        key = [0, 1]
+        if self.interactive.isBreeze() and self.interactive.isStench():
+            self.knowledgeBase.initial(B, (player[0], player[1]))
+            self.knowledgeBase.add_conjunct(S, (player[0], player[1]), (player[0], player[1]))
+            key = [1, 1]
+        elif self.interactive.isBreeze():
+            self.knowledgeBase.initial(B, (player[0], player[1]))
+            key = [1, 0]
+        else:
+            self.knowledgeBase.initial(S, (player[0], player[1]))
+            key = [0, 1]
                     # print("key", key, "at", player)
+        for i in self.newMove((player[0], player[1])):
                     position = (i[0], i[1])
                     if position in self.estimate:
                         # print("Estimate", self.estimate[position])
@@ -265,17 +280,32 @@ class Nerd:
                         # print(Fore.RED + "Compare", compare)
                         if compare == 0:
                             self.estimate[position] = [self.estimate[position][0] + key[0], self.estimate[position][1] + key[1]]
+                            self.knowledgeBase.add((i[0], i[1]), (player[0], player[1]))
                         elif key == [1,1]:
-                                self.estimate[position] = [(self.estimate[position][0] + key[0]) * (self.estimate[position][0] > 0), (self.estimate[position][1] + key[1]) * (self.estimate[position][1] > 0)]
+                            if self.estimate[position] == [0, 1]:
+                                self.knowledgeBase.add_conjunct(S, (i[0], i[1]), (player[0], player[1]))
+                            else:
+                                self.knowledgeBase.add_conjunct(B, (i[0], i[1]), (player[0], player[1]))
+                            self.estimate[position] = [(self.estimate[position][0] + key[0]) * (self.estimate[position][0] > 0), (self.estimate[position][1] + key[1]) * (self.estimate[position][1] > 0)]
                         else:
+                            if self.estimate[position] == [0, 1]:
+                                self.knowledgeBase.add_conjunct(S, (i[0], i[1]), (player[0], player[1]))
+                            else:
+                                self.knowledgeBase.add_conjunct(B, (i[0], i[1]), (player[0], player[1]))
                             if self.estimate[position] == [1, 1]:
                                 self.estimate[position] = [self.estimate[position][0] * key[0] + key[0], self.estimate[position][1] * key[1] + key[1]]
                             else:
                                 # print(Fore.RED + "Found safe position" + Fore.WHITE, position)
+                                self.knowledgeBase.add((i[0], i[1]), (player[0], player[1]))
+                                self.knowledgeBase.add_entail(M, (i[0], i[1]), (i[0], i[1]))
+                                self.knowledgeBase.close_entail((i[0], i[1]))
                                 self.safe.append(position)
                                 self.view[position] = []
                                 self.estimate[position] = [0, 0]
+                                # print("----------------------------------")
+                                # self.displayKB()
                     else:
+                        self.knowledgeBase.add((i[0], i[1]), (player[0], player[1]))
                         self.estimate[position] = key
         # print(Fore.RED + "Estimate" + Fore.WHITE,self.estimate)
     
@@ -295,6 +325,7 @@ class Nerd:
         
         
         while not self.interactive.isEnd:
+            self.displayKB()
             self.interactive.debug()
             player = self.interactive.getPlayerPosition()
             
@@ -304,15 +335,19 @@ class Nerd:
                 self.updateBS(player)  
             # print("Estimate position", self.estimate)
             if self.interactive.isNone():
+                self.knowledgeBase.initial(M, (player[0], player[1]))
                 for i in self.newMove((player[0], player[1])):
                     if (i[0], i[1]) not in self.safe:
                         self.safe.append((i[0], i[1]))
+                        self.knowledgeBase.add_entail(M, (player[0], player[1]), (i[0], i[1]))
+                self.knowledgeBase.close_entail((player[0], player[1]))
+            
             # print(Fore.CYAN + "Estimate: " + Fore.WHITE, self.estimate)                
             # print(Fore.CYAN + "View: " + Fore.WHITE, self.view)                
                     
             # print(Fore.WHITE + "Safe position" + Fore.WHITE, self.safe)
             previous = player
-            print(previous)
+            # print(previous)
             self.safe.remove((previous[0], previous[1]))
             # print(Fore.GREEN + "Safe position" + Fore.WHITE, self.safe)
             if self.travelNextMove(previous):
@@ -332,3 +367,7 @@ class Nerd:
         self.agentMap() 
         self.interactive.gameEnd()
         return self.interactive.getLogs() # donot modify this line
+    
+    def displayKB(self):
+        print(Fore.YELLOW + "KB: " + Fore.WHITE)
+        self.knowledgeBase.display()
