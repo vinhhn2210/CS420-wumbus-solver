@@ -8,12 +8,12 @@ class MapState:
     def __init__(self, name, nSize, mazer = []):
         self.name = name
         self.nSize = nSize
-        self.mazer = copy.deepcopy(mazer)
+        Pmazer = copy.deepcopy(mazer)
         # self.initialPos = generatePlayer(mazer, nSize)
         # self.initialPos = (3, 0, 'R')
-        self.initialPos = (3, 0, 0)
+        # self.initialPos = (3, 0, 0)
         # flip map vertically
-        self.mazer = self.mazer[::-1]
+        self.mazer = Pmazer[::-1]
         for i in range(nSize):
             for j in range(nSize):
                 #if self.mazer[i][j] != 'W' and self.mazer[i][j] != 'P':

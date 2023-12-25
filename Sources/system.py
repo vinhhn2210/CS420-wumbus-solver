@@ -4,7 +4,7 @@ from algorithm import *
 from interactive import *
 from algo_sample import *
 from algo_dpll import *
-from algo_nerve import *
+from algo_nerd import *
 import os 
 import json
 import re
@@ -70,6 +70,7 @@ class SystemController:
 
     def solvingAllMap(self):
         for mapName in self.mapLists:
+            # algo_lists = ['nerd']
             for algo in algo_lists:
                 self.solving(mapName, algo)
 
@@ -89,10 +90,10 @@ class SystemController:
         elif algorithm == 'fol':
             print("\t\t+ FOL algorithm is not implemented yet!")
             #solution = [(1, 2, 1, 100), (2, 2, 1, 0), (3, 2, 1, 50)]
-        elif algorithm == 'nerve':
-            print("\t\t+ nerve algorithm is not implemented yet!")
+        elif algorithm == 'nerd':
+            print("\t\t+ Nerd algorithm!")
             # solution = nerve(self.mapLists[mapName], 0)
-            model = Nerve(self.mapLists[mapName])
+            model = Nerd(self.mapLists[mapName])
         else:
             print("\t\t+ Algorithm is not exist!")
             return None
@@ -132,6 +133,10 @@ if __name__ == '__main__':
     if sys.argv[2] == 'auto':
         print('Solving all map with all current algorithms...')
         system.solvingAllMap()
+        
+        # mapName = 'm6'
+        # algorithm = 'nerd'
+        # system.solving(mapName, algorithm)
     elif sys.argv[2] == 'custom':
         print('Please choose the map you want to solve, for example: map1')
         mapName = input('Enter the map name: ')
@@ -142,6 +147,7 @@ if __name__ == '__main__':
         for i, algo in enumerate(algo_lists):
             print(f'{i + 1}. {algo}')
         algorithm = input('Enter the algorithm name: ')
+        print(algo_lists)
         if algorithm not in algo_lists:
             print('Algorithm is not exist!')
             exit()
