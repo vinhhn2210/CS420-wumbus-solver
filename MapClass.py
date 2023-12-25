@@ -19,18 +19,35 @@ class Map:
 
 		# Create Image for Map
 		self.mapImage = []
-		for i in range(self.M):
+		for X in range(self.M):
 			mapImageRow = []
-			for j in range(self.N):
-				if self.mapData[i][j] == "X": 
-					mapImageRow.append(CellClass.Cell(cellSize, (j * cellSize[0] + self.mapCoord[0], i * cellSize[1] + self.mapCoord[1]), (i, j), False))
-				else:
-					mapImageRow.append(CellClass.Cell(cellSize, (j * cellSize[0] + self.mapCoord[0], i * cellSize[1] + self.mapCoord[1]), (i, j), True))
+			for Y in range(self.N):
+				curCell = CellClass.Cell(cellSize, (Y * cellSize[0] + self.mapCoord[0], X * cellSize[1] + self.mapCoord[1]), (X, Y), False)
+				self.updateMapCell(X, Y, curCell)
+
+				mapImageRow.append(curCell)
 
 			self.mapImage.append(mapImageRow)
 
 	def getCell(self, i, j):
 		return self.mapImage[i % self.M][j % self.N]
+
+	def updateMapData(self, mapData):
+		self.mapData = mapData
+
+	def updateMapCell(self, X, Y, curCell):
+		if self.mapData[X][Y] != "X": 
+			curCell.updateExplored(True)
+		if X == self.mapSize[0] - 1 and Y == 0:
+			curCell.updateExit(True)
+		if 'S' in self.mapData[X][Y]:
+			curCell.updateStench(True)
+		if 'B' in self.mapData[X][Y]:
+			curCell.updateBreeze(True)
+		if 'W' in self.mapData[X][Y]:
+			curCell.updateWumpus(True)
+		if 'P' in self.mapData[X][Y]:
+			curCell.updatePit(True)	
 
 	def draw(self, gameScreen):
 		for mapImageRow in self.mapImage:

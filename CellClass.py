@@ -21,7 +21,7 @@ class Cell():
 		self.exitSize = (cellSize[0] * 70 / 100, cellSize[1] * 100 / 100)
 		self.exitCoord = self.getItemCoord(self.exitSize)
 
-		self.wumpusSize = (cellSize[0] * 90 / 100, cellSize[1] * 120 / 100)
+		self.wumpusSize = (cellSize[0] * 60 / 100, cellSize[1] * 100 / 100)
 		self.wumpusCoord = self.getItemCoord(self.wumpusSize)
 
 		self.fillColorPadding = (cellSize[0] * 10 / 100, cellSize[1] * 10 / 100)
@@ -41,7 +41,7 @@ class Cell():
 
 		self.exitImage = pygame.transform.scale(Const.CELL_IMAGE_EXIT, self.exitSize) 
 
-		self.wumpusImage = pygame.transform.scale(Const.CELL_IMAGE_CHEST, self.wumpusSize) 
+		self.wumpusImage = pygame.transform.scale(Const.CELL_IMAGE_WUMPUS, self.wumpusSize) 
 
 		self.pitImage = pygame.transform.scale(Const.CELL_IMAGE_PIT, self.cellSize) 
 
@@ -49,7 +49,7 @@ class Cell():
 		self.stenchText = TextClass.Text(
 			Const.VCR_OSD_MONO_FONT,
 			Const.RED,
-			70,
+			20,
 			"S",
 			(cellCoord[0], cellCoord[1], cellSize[0], cellSize[1])
 		)
@@ -57,7 +57,7 @@ class Cell():
 		self.breezeText = TextClass.Text(
 			Const.VCR_OSD_MONO_FONT,
 			Const.RED,
-			70,
+			20,
 			"B",
 			(cellCoord[0], cellCoord[1], cellSize[0], cellSize[1])
 		)

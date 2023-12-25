@@ -20,6 +20,13 @@ class InGame:
 		pygame.display.flip()
 		self.screenWidth, self.screenHeight = pygame.display.get_surface().get_size()
 
+		self.gameBackground = pygame.transform.scale(Const.INGAME_BACKGROUND, (self.screenWidth, self.screenHeight))
+		self.gameScreen.blit(self.gameBackground, (0, 0))
+		self.inGameContainer = (159 / 1000 * self.screenWidth, 51 / 562.71 * self.screenHeight, 542 / 1000 * self.screenWidth, 447 / 562.71 * self.screenHeight)
+
+		# Minimap
+		self.minimapContainer = (762.51 / 1000 * self.screenWidth, 51 / 562.71 * self.screenHeight, 196 / 1000 * self.screenWidth, 152 / 562.71 * self.screenHeight)
+
 		# Running
 		self.running = True
 
@@ -31,7 +38,8 @@ class InGame:
 		print(self.menuData)
 
 		# Set up Map
-		self.gameMap = []
+		self.gameMap = None
+		self.miniMap = None
 
 		# Set up Agent
 		self.agent = None
@@ -48,13 +56,8 @@ class InGame:
 		self.jsonPath = jsonFilePath
 		self.loadJsonFile(jsonFilePath)
 
-		self.gameBackground = pygame.transform.scale(Const.INGAME_BACKGROUND, (self.screenWidth, self.screenHeight))
-		self.gameScreen.blit(self.gameBackground, (0, 0))
-		self.inGameContainer = (159 / 1000 * self.screenWidth, 51 / 562.71 * self.screenHeight, 542 / 1000 * self.screenWidth, 447 / 562.71 * self.screenHeight)
-
 		# Game Properties
 		# self.isPause = 0
-		# self.gamePropertiesContent = (762.51 / 1000 * self.screenWidth, 51 / 562.71 * self.screenHeight, 196 / 1000 * self.screenWidth, 152 / 562.71 * self.screenHeight)
 		# self.pauseButton = [
 		# 	ButtonClass.Button(
 		# 		(self.gamePropertiesContent[2] * 15 / 100, self.gamePropertiesContent[2] * 15 / 100),
@@ -114,13 +117,13 @@ class InGame:
 		# )
 
 		# Game Property
-		gamePropertyCoord = (763 / 1000 * self.screenWidth, 259 / 562.71 * self.screenHeight)
+		self.gamePropertyCoord = (763 / 1000 * self.screenWidth, 259 / 562.71 * self.screenHeight)
 
 		# Set up Clock
 		self.clock = pygame.time.Clock()
 		self.isEndGame = False
 		self.initTick = pygame.time.get_ticks()
-		self.stepTime = 0.3
+		self.stepTime = 1
 		self.totalStep = len(self.jsonData)
 		# print(self.stepTime)
 
@@ -140,8 +143,10 @@ class InGame:
 		self.mapVision = data['0']['vision']
 
 		# Game Map
-		inGameContainer = (159 / 1000 * self.screenWidth, 51 / 562.71 * self.screenHeight, 542 / 1000 * self.screenWidth, 447 / 562.71 * self.screenHeight)
-		self.gameMap = MapClass.Map(self.mapSize, self.mapVision, (inGameContainer[2], inGameContainer[3]), inGameContainer)
+		self.gameMap = MapClass.Map(self.mapSize, self.mapVision, (self.inGameContainer[2], self.inGameContainer[3]), self.inGameContainer)
+
+		# Initial Minimap
+		self.minimap = MapClass.Map(self.mapSize, self.map, (self.minimapContainer[2], self.minimapContainer[3]), self.minimapContainer)
 
 		# Initial Agent
 		X, Y, direction, score = data["0"]["agent"]
@@ -167,33 +172,29 @@ class InGame:
 		# self.timeText.changeTextContent(f'Time: {curTime}ms')
 		# self.memoryText.changeTextContent(f'Memory: {curMem}MB')
 
+		# self.scoreText.changeTextContent(f"Score: {score}")
+
 		X, Y, direction, score = self.jsonData[f"{self.step}"]["agent"]
 		X = self.mapSize[0] - X - 1
-		print("Step: ", X, Y)
 		self.agent.updateDirection(direction)
 
 		self.mapVision = self.jsonData[f'{self.step}']['vision']
+		self.map = self.jsonData[f'{self.step}']['map']
 
-		# self.scoreText.changeTextContent(f"Score: {score}")
+		self.gameMap.updateMapData(self.mapVision)
+		self.minimap.updateMapData(self.map)
 
 		if self.mapVision[X][Y] != 'X':
 			self.gameMap.getCell(X, Y).updateExplored(True)
 
-			if X == self.mapSize[0] - 1 and Y == 0:
-				self.gameMap.getCell(X, Y).updateExit(True)
-				print("OKEI HERE")
-
-			if 'S' in self.mapVision[X][Y]:
-				self.gameMap.getCell(X, Y).updateStench(True)
-			if 'B' in self.mapVision[X][Y]:
-				self.gameMap.getCell(X, Y).updateBreeze(True)
-			if 'W' in self.mapVision[X][Y]:
-				self.gameMap.getCell(X, Y).updateWumpus(True)
-			if 'P' in self.mapVision[X][Y]:
-				self.gameMap.getCell(X, Y).updatePit(True)
+		self.gameMap.updateMapCell(X, Y, self.gameMap.getCell(X, Y))
 
 		self.gameMap.getCell(X, Y).updateAgent(True)
 		self.agent.updateAgentCell(self.gameMap.getCell(X, Y))	
+
+		for row in range(self.mapSize[0]):
+			for col in range(self.mapSize[1]):
+				self.minimap.updateMapCell(row, col, self.minimap.getCell(row, col))
 
 	# def pauseGame(self):
 	# 	tmpFloor = self.curFloor
@@ -303,6 +304,7 @@ class InGame:
 			# self.scoreText.draw(self.gameScreen)
 			# self.floorText.draw(self.gameScreen)
 			self.gameMap.draw(self.gameScreen)
+			self.minimap.draw(self.gameScreen)
 			self.agent.draw(self.gameScreen)
 
 			pygame.display.update()
