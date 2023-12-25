@@ -15,12 +15,15 @@ class InteractiveGame:
         self.dy = [0, 1, 0, -1]
         self.jsonData = {}
     
+    def flipDirection(self, direction):
+        return (direction + 2) % 4
+
     def flushLog(self):
-        self.logs.append(self.playerPosition + (self.score, ))
+        self.logs.append((self.playerPosition[0], self.playerPosition[1], self.flipDirection(self.playerPosition[2]), self.score))
         self.jsonData[str(len(self.logs))] = {
             "mapSize": self.size,
             "map": self.mazer[::-1],
-            "agent": [self.playerPosition[0], self.playerPosition[1], self.playerPosition[2], self.score],
+            "agent": [self.playerPosition[0], self.playerPosition[1], self.flipDirection(self.playerPosition[2]), self.score],
         }
 
     def debug(self):
@@ -69,9 +72,9 @@ class InteractiveGame:
             print()
 
     def getLogs(self):
-        return self.logs
+        return self.logs, self.jsonData
 
-    def getJsonLogs(self, mapName, agentPath, algorithm):
+    def getJsonLogs(self):
         return self.jsonData
 
     def isGoal(self):

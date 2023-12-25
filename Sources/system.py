@@ -60,6 +60,16 @@ class SystemController:
         # add color to result_ + mapName + '_' + algorithm + '.txt
         print('\t\t+ Result file: ' + '\033[93m' + 'result_' + mapName + '_' + algorithm + '.txt' + '\033[0m')
     
+    def writeJson(self, mapName, algorithm, solution):
+        with open(os.path.join(CUR_PATH, 'Solutions', 'result_' + mapName + '_' + algorithm + '.json'), 'w') as f:
+            json_str = json.dumps(solution, indent=4)
+            json_str = re.sub(r"(?<=\[)[^\[\]]+(?=])", repl_func, json_str)
+            f.write(json_str)
+            # json.dump(solution, f)
+
+        # add color to result_ + mapName + '_' + algorithm + '.json
+        print('\t\t+ Result file: ' + '\033[93m' + 'result_' + mapName + '_' + algorithm + '.json' + '\033[0m')
+    
     def printMap(self, mapName):
         self.mapLists[mapName].printMap()
 
@@ -106,8 +116,8 @@ class SystemController:
             print('\t+ No solution found!')
             return None
 
-        self.writeSolution(mapName, algorithm, solution)
-
+        self.writeSolution(mapName, algorithm, solution[0])
+        self.writeJson(mapName, algorithm, solution[1])
         # add color to mapname and algorith name
         mapName = '\033[94m' + mapName + '\033[0m'
         algorithm = '\033[92m' + algorithm + '\033[0m'
