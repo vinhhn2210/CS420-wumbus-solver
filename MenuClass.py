@@ -55,13 +55,15 @@ class Menu:
         )
 
         # Algorithm Text
+        algoSize = [containerBoxContainer[2] * 40 / 100, containerBoxContainer[3] * 10 / 100]
+        tickSize = [algoSize[0] * 30 / 100, algoSize[1]]
         self.algoTuple = ['DPLL', 'Nerve']
 
         # Choose Algorithm
         algoTickCoord = [
-            (containerBoxContainer[0], containerBoxContainer[1] + containerBoxContainer[3] * 30 / 100, containerBoxContainer[2] * 20 / 100, containerBoxContainer[1] * 15 / 100),
+            (containerBoxContainer[0] + containerBoxContainer[2] * 5 / 100, containerBoxContainer[1] + containerBoxContainer[3] * 25 / 100, tickSize[0], tickSize[1]),
         ]
-        algoTickCoord.append((containerBoxContainer[0] + containerBoxContainer[2] - algoTickCoord[0][2] - containerBoxContainer[2] * 25 / 100, algoTickCoord[0][1], algoTickCoord[0][2], algoTickCoord[0][3]))
+        algoTickCoord.append((containerBoxContainer[0] + containerBoxContainer[2] - algoSize[0], algoTickCoord[0][1], algoTickCoord[0][2], algoTickCoord[0][3]))
 
         self.algoTickButtonList = [[ButtonClass.Button(
             (containerBoxContainer[2] * 10 / 100, containerBoxContainer[3] * 10 / 100),
@@ -74,7 +76,7 @@ class Menu:
             Const.BROWN,
             25,
             self.algoTuple[i],
-            (self.algoTickButtonList[i][0].coord[0] + containerBoxContainer[3] * 2 / 100 + self.algoTickButtonList[i][0].size[0], self.algoTickButtonList[i][0].coord[1], 0, self.algoTickButtonList[i][0].size[1])
+            (self.algoTickButtonList[i][0].coord[0] + containerBoxContainer[2] * 2 / 100 + self.algoTickButtonList[i][0].size[0], self.algoTickButtonList[i][0].coord[1], algoSize[0] - tickSize[0], self.algoTickButtonList[i][0].size[1])
         ) for i in range(len(self.algoTuple))]
 
         # Map Text
