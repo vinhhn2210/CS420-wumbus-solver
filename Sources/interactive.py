@@ -16,7 +16,10 @@ class InteractiveGame:
         self.jsonData = {}
         self.KBlogs = []
     def flipDirection(self, direction):
-        return (direction + 2) % 4
+        if (direction == 0):
+            return 2
+        elif (direction == 2):
+            return 0
 
     def appendKBLog(self, log):
         self.KBlogs.append(log)
