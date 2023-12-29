@@ -9,13 +9,10 @@ class Cell():
 		self.cellCoord = cellCoord
 		self.cellID = cellID
 
-		# Explore or not
+		# Explored or not
 		self.isExplored = isExplored
 
-		# Properties
-		self.itemPadding = cellSize[1] * 15 / 100
-
-		self.chestSize = (cellSize[0] * 90 / 100, cellSize[1] * 120 / 100)
+		self.chestSize = (cellSize[0] * 60 / 100, cellSize[1] * 80 / 100)
 		self.chestCoord = self.getItemCoord(self.chestSize)
 
 		self.exitSize = (cellSize[0] * 70 / 100, cellSize[1] * 100 / 100)
@@ -24,11 +21,8 @@ class Cell():
 		self.wumpusSize = (cellSize[0] * 60 / 100, cellSize[1] * 100 / 100)
 		self.wumpusCoord = self.getItemCoord(self.wumpusSize)
 
-		self.fillColorPadding = (cellSize[0] * 10 / 100, cellSize[1] * 10 / 100)
-
-		self.rect_dimensions = (self.cellCoord[0] + self.fillColorPadding[0], self.cellCoord[1] + self.fillColorPadding[1], self.cellSize[0] - 2 * self.fillColorPadding[0], self.cellSize[1] - 2 * self.fillColorPadding[1])
-		self.rect_surface = pygame.Surface((self.rect_dimensions[2], self.rect_dimensions[3]), pygame.SRCALPHA)
-
+		self.fillColorPadding = (cellSize[0] * 15 / 100, cellSize[1] * 15 / 100)
+		
 		# Cell Image
 		self.unexplored_image = pygame.transform.scale(Const.CELL_IMAGE_UNEXPLORED, self.cellSize)
 
@@ -46,18 +40,18 @@ class Cell():
 		self.pitImage = pygame.transform.scale(Const.CELL_IMAGE_PIT, self.cellSize) 
 
 		# Stench, Breeze Text
+		textSize = int(60 * cellSize[0] / 130.08)
 		self.stenchText = TextClass.Text(
 			Const.VCR_OSD_MONO_FONT,
 			Const.RED,
-			20,
+			textSize,
 			"S",
 			(cellCoord[0], cellCoord[1], cellSize[0], cellSize[1])
 		)
-
 		self.breezeText = TextClass.Text(
 			Const.VCR_OSD_MONO_FONT,
 			Const.RED,
-			20,
+			textSize,
 			"B",
 			(cellCoord[0], cellCoord[1], cellSize[0], cellSize[1])
 		)
@@ -77,9 +71,7 @@ class Cell():
 		return itemCoord
 
 	def updateAgent(self, value):
-		self.agentID = value
-		curColor = Const.COLOR_AGENT
-		self.rect_surface.fill((curColor[0], curColor[1], curColor[2]))
+		self.isAgent = value
 
 	def updateExplored(self, value):
 		self.isExplored = value
@@ -88,7 +80,7 @@ class Cell():
 		self.isExit = value
 
 	def updateChest(self, value):
-		self.chestID = value
+		self.isChest = value
 
 	def updateWumpus(self, value):
 		self.isWumpus = value
@@ -112,11 +104,11 @@ class Cell():
 		else:
 			gameScreen.blit(self.image[self.emptyID], self.cellCoord)
 
+		# if self.isAgent == True:
+		# 	pygame.draw.rect(gameScreen, Const.COLOR_AGENT, pygame.Rect(self.cellCoord[0] + self.fillColorPadding[0], self.cellCoord[1] + self.fillColorPadding[1], self.cellSize[0] - 2 * self.fillColorPadding[0], self.cellSize[1] - 2 * self.fillColorPadding[1]))
+
 		if self.isWumpus == True:
 			gameScreen.blit(self.wumpusImage, self.wumpusCoord)
-
-		if self.isAgent == True:
-			gameScreen.blit(self.rect_surface, (self.rect_dimensions[0], self.rect_dimensions[1]))
 
 		if self.isExit == True:
 			gameScreen.blit(self.exitImage, self.exitCoord)
@@ -127,6 +119,6 @@ class Cell():
 		if self.isBreeze == True:
 			self.breezeText.drawUpLeft(gameScreen)
 
-		if self.isStench:
+		if self.isStench == True:
 			self.stenchText.drawBottomRight(gameScreen)
 

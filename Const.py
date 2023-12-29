@@ -43,5 +43,13 @@ AGENT_FRAME_LIST = [
 	[pygame.image.load(f'Assets/Images/InGame/Agent/agent-left-{j}.png') for j in range(3)],
 ]
 
+PAUSE_BUTTON = [
+	pygame.image.load('Assets/Images/InGame/Pause_button.png'),
+	pygame.image.load('Assets/Images/InGame/Continue_button.png')
+]
+MENU_BUTTON = pygame.image.load('Assets/Images/InGame/Menu_button.png')
+LEFT_BUTTON = pygame.image.load('Assets/Images/InGame/left_preview.png')
+RIGHT_BUTTON = pygame.image.load('Assets/Images/InGame/right_preview.png')
+
 
 

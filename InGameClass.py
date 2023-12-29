@@ -22,6 +22,8 @@ class InGame:
 
 		self.gameBackground = pygame.transform.scale(Const.INGAME_BACKGROUND, (self.screenWidth, self.screenHeight))
 		self.gameScreen.blit(self.gameBackground, (0, 0))
+		
+		# Ingame Map
 		self.inGameContainer = (159 / 1000 * self.screenWidth, 51 / 562.71 * self.screenHeight, 542 / 1000 * self.screenWidth, 447 / 562.71 * self.screenHeight)
 
 		# Minimap
@@ -45,9 +47,9 @@ class InGame:
 		self.agent = None
 
 		# Data for ingame
+		self.mapSize = ()
 		self.map = []
 		self.mapVision = []
-		self.mapSize = ()
 		self.step = 0
 		self.jsonData = []
 		self.gameTime = 0
@@ -56,81 +58,74 @@ class InGame:
 		self.jsonPath = jsonFilePath
 		self.loadJsonFile(jsonFilePath)
 
-		# Game Properties
-		# self.isPause = 0
-		# self.pauseButton = [
-		# 	ButtonClass.Button(
-		# 		(self.gamePropertiesContent[2] * 15 / 100, self.gamePropertiesContent[2] * 15 / 100),
-		# 		Const.PAUSE_BUTTON[i],
-		# 		(self.gamePropertiesContent[0], self.gamePropertiesContent[1], self.gamePropertiesContent[2] / 4, self.gamePropertiesContent[3] * 30 / 100)
-		# 	)
-		# 	for i in range(2)
-		# ]
-		# self.downSpeedButton = ButtonClass.Button(
-		# 	(self.gamePropertiesContent[2] * 15 / 100, self.gamePropertiesContent[2] * 15 / 100),
-		# 	Const.LEFT_BUTTON,
-		# 	(self.gamePropertiesContent[0] + self.gamePropertiesContent[2] / 4, self.gamePropertiesContent[1], self.gamePropertiesContent[2] / 4, self.gamePropertiesContent[3] * 30 / 100)
-		# )
-		# self.upSpeedButton = ButtonClass.Button(
-		# 	(self.gamePropertiesContent[2] * 15 / 100, self.gamePropertiesContent[2] * 15 / 100),
-		# 	Const.RIGHT_BUTTON,
-		# 	(self.gamePropertiesContent[0] + self.gamePropertiesContent[2] * 2 / 4, self.gamePropertiesContent[1], self.gamePropertiesContent[2] / 4, self.gamePropertiesContent[3] * 30 / 100)
-		# )
-		# self.menuButton = ButtonClass.Button(
-		# 	(self.gamePropertiesContent[2] * 15 / 100, self.gamePropertiesContent[2] * 15 / 100),
-		# 	Const.MENU_BUTTON,
-		# 	(self.gamePropertiesContent[0] + self.gamePropertiesContent[2] * 3 / 4, self.gamePropertiesContent[1], self.gamePropertiesContent[2] / 4, self.gamePropertiesContent[3] * 30 / 100)
-		# )
-
-		# textPadding = self.gamePropertiesContent[2] * 5 / 100 
-		# # Time Text
-		# self.timeText = TextClass.Text(
-		# 	Const.AMATICSC_FONT,
-		# 	Const.BROWN,
-		# 	20,
-		# 	"Time: 0ms",
-		# 	(self.gamePropertiesContent[0] + textPadding, self.gamePropertiesContent[1] + self.gamePropertiesContent[3] * 35 / 100, self.gamePropertiesContent[2] - 2 * textPadding, self.gamePropertiesContent[3] * 5 / 100)
-		# )
-		# # Time Text
-		# self.memoryText = TextClass.Text(
-		# 	Const.AMATICSC_FONT,
-		# 	Const.BROWN,
-		# 	20,
-		# 	"Memory: 0MB",
-		# 	(self.gamePropertiesContent[0] + textPadding, self.gamePropertiesContent[1] + self.gamePropertiesContent[3] * 50 / 100, self.gamePropertiesContent[2] - 2 * textPadding, self.gamePropertiesContent[3] * 5 / 100)
-		# )
-		# Score Text
-		# self.scoreText = TextClass.Text(
-		# 	Const.AMATICSC_FONT,
-		# 	Const.BROWN,
-		# 	20,
-		# 	"Step: 0",
-		# 	(self.gamePropertiesContent[0] + textPadding, self.gamePropertiesContent[1] + self.gamePropertiesContent[3] * 65 / 100, self.gamePropertiesContent[2] - 2 * textPadding, self.gamePropertiesContent[3] * 5 / 100)
-		# )
-		# # Score Text
-		# self.floorText = TextClass.Text(
-		# 	Const.AMATICSC_FONT,
-		# 	Const.BROWN,
-		# 	20,
-		# 	"Floor: 1",
-		# 	(self.gamePropertiesContent[0] + textPadding, self.gamePropertiesContent[1] + self.gamePropertiesContent[3] * 80 / 100, self.gamePropertiesContent[2] - 2 * textPadding, self.gamePropertiesContent[3] * 5 / 100)
-		# )
-
-		# Game Property
-		self.gamePropertyCoord = (763 / 1000 * self.screenWidth, 259 / 562.71 * self.screenHeight)
-
 		# Set up Clock
 		self.clock = pygame.time.Clock()
 		self.isEndGame = False
 		self.initTick = pygame.time.get_ticks()
-		self.stepTime = 1
+		self.stepTime = 0.5
 		self.totalStep = len(self.jsonData)
-		# print(self.stepTime)
 
+		# Game Property
+		self.gamePropertyCoord = (763 / 1000 * self.screenWidth, 247 / 562.71 * self.screenHeight)
+		self.gamePropertySize = (196 / 1000 * self.screenWidth, 248 / 562.71 * self.screenHeight)
+		self.gamePropertiesContainer = (self.gamePropertyCoord[0], self.gamePropertyCoord[1], self.gamePropertySize[0], self.gamePropertySize[1])
+
+		self.isPause = 0
+		self.pauseButton = [
+			ButtonClass.Button(
+				(self.gamePropertiesContainer[2] * 15 / 100, self.gamePropertiesContainer[2] * 15 / 100),
+				Const.PAUSE_BUTTON[i],
+				(self.gamePropertiesContainer[0], self.gamePropertiesContainer[1], self.gamePropertiesContainer[2] / 4, self.gamePropertiesContainer[3] * 30 / 100)
+			)
+			for i in range(2)
+		]
+		self.downSpeedButton = ButtonClass.Button(
+			(self.gamePropertiesContainer[2] * 15 / 100, self.gamePropertiesContainer[2] * 15 / 100),
+			Const.LEFT_BUTTON,
+			(self.gamePropertiesContainer[0] + self.gamePropertiesContainer[2] / 4, self.gamePropertiesContainer[1], self.gamePropertiesContainer[2] / 4, self.gamePropertiesContainer[3] * 30 / 100)
+		)
+		self.upSpeedButton = ButtonClass.Button(
+			(self.gamePropertiesContainer[2] * 15 / 100, self.gamePropertiesContainer[2] * 15 / 100),
+			Const.RIGHT_BUTTON,
+			(self.gamePropertiesContainer[0] + self.gamePropertiesContainer[2] * 2 / 4, self.gamePropertiesContainer[1], self.gamePropertiesContainer[2] / 4, self.gamePropertiesContainer[3] * 30 / 100)
+		)
+		self.menuButton = ButtonClass.Button(
+			(self.gamePropertiesContainer[2] * 15 / 100, self.gamePropertiesContainer[2] * 15 / 100),
+			Const.MENU_BUTTON,
+			(self.gamePropertiesContainer[0] + self.gamePropertiesContainer[2] * 3 / 4, self.gamePropertiesContainer[1], self.gamePropertiesContainer[2] / 4, self.gamePropertiesContainer[3] * 30 / 100)
+		)
+
+		textPadding = self.gamePropertiesContainer[2] * 5 / 100 
+		# Time Text
+		self.timeText = TextClass.Text(
+			Const.AMATICSC_FONT,
+			Const.BROWN,
+			30,
+			"Time: 0ms",
+			(self.gamePropertiesContainer[0] + textPadding, self.gamePropertiesContainer[1] + self.gamePropertiesContainer[3] * 35 / 100, self.gamePropertiesContainer[2] - 2 * textPadding, self.gamePropertiesContainer[3] * 10 / 100)
+		)
+		# Time Text
+		self.memoryText = TextClass.Text(
+			Const.AMATICSC_FONT,
+			Const.BROWN,
+			30,
+			"Memory: 0MB",
+			(self.gamePropertiesContainer[0] + textPadding, self.gamePropertiesContainer[1] + self.gamePropertiesContainer[3] * 50 / 100, self.gamePropertiesContainer[2] - 2 * textPadding, self.gamePropertiesContainer[3] * 10 / 100)
+		)
+		# Score Text
+		self.scoreText = TextClass.Text(
+			Const.AMATICSC_FONT,
+			Const.BROWN,
+			30,
+			"Score: 0",
+			(self.gamePropertiesContainer[0] + textPadding, self.gamePropertiesContainer[1] + self.gamePropertiesContainer[3] * 65 / 100, self.gamePropertiesContainer[2] - 2 * textPadding, self.gamePropertiesContainer[3] * 10 / 100)
+		)
+
+		self.timeText.changeTextContent(f'Time: 0ms')
+		self.memoryText.changeTextContent(f'Memory: 0MB')
+
+		# Update Map, Get Ready For Step 0
 		self.updateMap()
-
-		# self.timeText.changeTextContent(f'Time: 0ms')
-		# self.memoryText.changeTextContent(f'Memory: 0MB')
 
 	def loadJsonFile(self, jsonFilePath):
 		jsonFile = open(jsonFilePath)
@@ -165,36 +160,35 @@ class InGame:
 		jsonFile.close()
 
 	def updateMap(self):
-		# self.gameTime = self.jsonData[f'{self.step}']['time']
-		# self.gameMemory = self.jsonData[f'{self.step}']['memory']
-		# curTime = round(self.gameTime / self.totalStep * self.step, 2)
-		# curMem = round(self.gameMemory / self.totalStep * self.step, 2)
-		# self.timeText.changeTextContent(f'Time: {curTime}ms')
-		# self.memoryText.changeTextContent(f'Memory: {curMem}MB')
-
-		# self.scoreText.changeTextContent(f"Score: {score}")
+		curTime = round(self.gameTime / self.totalStep * self.step, 2)
+		curMem = round(self.gameMemory / self.totalStep * self.step, 2)
+		self.timeText.changeTextContent(f'Time: {curTime}ms')
+		self.memoryText.changeTextContent(f'Memory: {curMem}MB')
 
 		X, Y, direction, score = self.jsonData[f"{self.step}"]["agent"]
 		X = self.mapSize[0] - X - 1
 		self.agent.updateDirection(direction)
 
+		# Update Score For Frontend
+		self.scoreText.changeTextContent(f"Score: {score}")
+
 		self.mapVision = self.jsonData[f'{self.step}']['vision']
 		self.map = self.jsonData[f'{self.step}']['map']
 
+		# Update data for backend
 		self.gameMap.updateMapData(self.mapVision)
 		self.minimap.updateMapData(self.map)
 
-		if self.mapVision[X][Y] != 'X':
-			self.gameMap.getCell(X, Y).updateExplored(True)
-
+		# Update Ingame Map for frontend
 		self.gameMap.updateMapCell(X, Y, self.gameMap.getCell(X, Y))
-
-		self.gameMap.getCell(X, Y).updateAgent(True)
-		self.agent.updateAgentCell(self.gameMap.getCell(X, Y))	
-
+		# Update Minimap for frontend
 		for row in range(self.mapSize[0]):
 			for col in range(self.mapSize[1]):
 				self.minimap.updateMapCell(row, col, self.minimap.getCell(row, col))
+
+		# Update agent
+		self.gameMap.getCell(X, Y).updateAgent(True)
+		self.agent.updateAgentCell(self.gameMap.getCell(X, Y))	
 
 	# def pauseGame(self):
 	# 	tmpFloor = self.curFloor
@@ -295,14 +289,13 @@ class InGame:
 
 			# Draw window
 			self.gameScreen.blit(self.gameBackground, (0, 0))
-			# self.pauseButton[self.isPause].draw(self.gameScreen)
-			# self.menuButton.draw(self.gameScreen)
-			# self.upSpeedButton.draw(self.gameScreen)
-			# self.downSpeedButton.draw(self.gameScreen)
-			# self.timeText.draw(self.gameScreen)
-			# self.memoryText.draw(self.gameScreen)
-			# self.scoreText.draw(self.gameScreen)
-			# self.floorText.draw(self.gameScreen)
+			self.pauseButton[self.isPause].draw(self.gameScreen)
+			self.menuButton.draw(self.gameScreen)
+			self.upSpeedButton.draw(self.gameScreen)
+			self.downSpeedButton.draw(self.gameScreen)
+			self.timeText.draw(self.gameScreen)
+			self.memoryText.draw(self.gameScreen)
+			self.scoreText.draw(self.gameScreen)
 			self.gameMap.draw(self.gameScreen)
 			self.minimap.draw(self.gameScreen)
 			self.agent.draw(self.gameScreen)

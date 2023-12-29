@@ -50,7 +50,6 @@ class Agent:
 
 	def updateDirection(self, direction):
 		self.animationDirection = direction
-		# print("Direction: ", direction)
 
 	def updateAgentCell(self, newCell):
 		self.agentCell = newCell
