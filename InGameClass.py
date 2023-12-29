@@ -62,7 +62,7 @@ class InGame:
 		self.clock = pygame.time.Clock()
 		self.isEndGame = False
 		self.initTick = pygame.time.get_ticks()
-		self.stepTime = 0.5
+		self.stepTime = 0.7
 		self.totalStep = len(self.jsonData)
 
 		# Game Property
@@ -132,6 +132,9 @@ class InGame:
 
 		data = json.load(jsonFile)
 
+		# Json Data
+		self.jsonData = data
+
 		# Initial Map
 		self.mapSize = (data['0']['mapSize'], data['0']['mapSize'])
 		self.map = data["0"]["map"]
@@ -149,9 +152,6 @@ class InGame:
 
 		self.agent = AgentClass.Agent(self.gameMap.getCell(X, Y))
 		self.agent.updateDirection(direction)
-
-		# Json Data
-		self.jsonData = data
 
 		# Time, memory
 		self.gameTime = self.jsonData['0']['time']
@@ -180,7 +180,9 @@ class InGame:
 		self.minimap.updateMapData(self.map)
 
 		# Update Ingame Map for frontend
-		self.gameMap.updateMapCell(X, Y, self.gameMap.getCell(X, Y))
+		for row in range(self.mapSize[0]):
+			for col in range(self.mapSize[1]):
+				self.gameMap.updateMapCell(row, col, self.gameMap.getCell(row, col))
 		# Update Minimap for frontend
 		for row in range(self.mapSize[0]):
 			for col in range(self.mapSize[1]):
@@ -190,59 +192,39 @@ class InGame:
 		self.gameMap.getCell(X, Y).updateAgent(True)
 		self.agent.updateAgentCell(self.gameMap.getCell(X, Y))	
 
-	# def pauseGame(self):
-	# 	tmpFloor = self.curFloor
+	def pauseGame(self):
+		while self.isPause == 1:
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					self.running = False
+					exit(0)
 
-	# 	while self.isPause == 1:
-	# 		for event in pygame.event.get():
-	# 			if event.type == pygame.QUIT:
-	# 				self.running = False
-	# 				exit(0)
+			pauseState = self.pauseButton[0].isClicked(self.gameScreen)
+			if pauseState == True:
+				self.isPause = 1 - self.isPause	
 
-	# 		pauseState = self.pauseButton[0].isClicked(self.gameScreen)
-	# 		if pauseState == True:
-	# 			self.isPause = 1 - self.isPause	
+			menuState = self.menuButton.isClicked(self.gameScreen)
+			if menuState == True:
+				menu = MenuClass.Menu((self.screenWidth, self.screenHeight))
+				menu.run()
+				self.running = False
+				break
 
-	# 		menuState = self.menuButton.isClicked(self.gameScreen)
-	# 		if menuState == True:
-	# 			menu = MenuClass.Menu((self.screenWidth, self.screenHeight))
-	# 			menu.run()
-	# 			self.running = False
-	# 			break
+			self.gameScreen.blit(self.gameBackground, (0, 0))
+			self.pauseButton[self.isPause].draw(self.gameScreen)
+			self.menuButton.draw(self.gameScreen)
+			self.upSpeedButton.draw(self.gameScreen)
+			self.downSpeedButton.draw(self.gameScreen)
+			self.timeText.draw(self.gameScreen)
+			self.memoryText.draw(self.gameScreen)
+			self.scoreText.draw(self.gameScreen)
+			self.gameMap.draw(self.gameScreen)
+			self.minimap.draw(self.gameScreen)
+			self.agent.drawWithoutFrame(self.gameScreen)
 
-	# 		if self.leftButton.isClicked(self.gameScreen) == True:
-	# 			if tmpFloor > 0:
-	# 				tmpFloor -= 1
-	# 				self.floorText.changeTextContent(f'Floor: {tmpFloor + 1}')
+			pygame.display.update()
 
-			
-	# 		if self.rightButton.isClicked(self.gameScreen) == True:
-	# 			if tmpFloor < self.totalFloor - 1:
-	# 				tmpFloor += 1
-	# 				self.floorText.changeTextContent(f'Floor: {tmpFloor + 1}')
-
-	# 		self.gameScreen.blit(self.gameBackground, (0, 0))
-	# 		self.pauseButton[self.isPause].draw(self.gameScreen)
-	# 		self.menuButton.draw(self.gameScreen)
-	# 		self.upSpeedButton.draw(self.gameScreen)
-	# 		self.downSpeedButton.draw(self.gameScreen)
-	# 		self.timeText.draw(self.gameScreen)
-	# 		self.memoryText.draw(self.gameScreen)
-	# 		self.scoreText.draw(self.gameScreen)
-	# 		self.floorText.draw(self.gameScreen)
-	# 		self.leftButton.draw(self.gameScreen)
-	# 		self.rightButton.draw(self.gameScreen)
-	# 		self.gameMap[tmpFloor].draw(self.gameScreen)
-	# 		for i in self.agentList:
-	# 			if i.agentFloor == tmpFloor:
-	# 				i.drawWithoutFrame(self.gameScreen)
-	# 		for i in self.agentPropertyList:
-	# 			i.draw(self.gameScreen)
-	# 		pygame.display.update()
-
-	# 	self.initTick = pygame.time.get_ticks()
-	# 	self.floorText.changeTextContent(f'Floor: {self.curFloor + 1}')
-
+		self.initTick = pygame.time.get_ticks()
 
 	def run(self):
 		while self.running :
@@ -254,22 +236,22 @@ class InGame:
 					exit(0)
 					break
 
-			# pauseState = self.pauseButton[0].isClicked(self.gameScreen)
+			pauseState = self.pauseButton[0].isClicked(self.gameScreen)
 
-			# if pauseState == True:
-			# 	self.isPause = 1 - self.isPause
-			# 	self.pauseGame()
+			if pauseState == True:
+				self.isPause = 1 - self.isPause
+				self.pauseGame()
 
-			# menuState = self.menuButton.isClicked(self.gameScreen)
-			# if menuState == True:
-			# 	menu = MenuClass.Menu((self.screenWidth, self.screenHeight))
-			# 	menu.run()
-			# 	break
+			menuState = self.menuButton.isClicked(self.gameScreen)
+			if menuState == True:
+				menu = MenuClass.Menu((self.screenWidth, self.screenHeight))
+				menu.run()
+				break
 
-			# if self.upSpeedButton.isClicked(self.gameScreen) == True:
-			# 	self.stepTime = max(0.01, self.stepTime - 0.1)
-			# if self.downSpeedButton.isClicked(self.gameScreen) == True:
-			# 	self.stepTime = min(1, self.stepTime + 0.1)
+			if self.upSpeedButton.isClicked(self.gameScreen) == True:
+				self.stepTime = max(0.3, self.stepTime - 0.1)
+			if self.downSpeedButton.isClicked(self.gameScreen) == True:
+				self.stepTime = min(1, self.stepTime + 0.1)
 
 
 			tick = pygame.time.get_ticks()
