@@ -311,7 +311,7 @@ class Nerd:
     
     def killWumpus(self):
         # search for possible wumpus in estimate: estimate[1] > 1
-        max_stench = max([self.estimate[i][1] for i in self.estimate])
+        max_stench = max([self.estimate[i][1] for i in self.estimate if self.estimate[i][0] == 0], default = 0)
         if max_stench == 0:
             return False
         self.wumpus = [i for i in self.estimate if self.estimate[i][1] == max_stench]
