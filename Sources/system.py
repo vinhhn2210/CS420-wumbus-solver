@@ -1,10 +1,10 @@
 from lists_of_algorithms import *
 from mapstate import *
-from algorithm import *
 from interactive import *
 from algo_sample import *
 from algo_dpll import *
 from algo_nerd import *
+from algo_bc_fc import *
 import os 
 import json
 import re
@@ -89,7 +89,7 @@ class SystemController:
 
     def solvingAllMap(self):
         for mapName in self.mapLists:
-            algo_lists = ['nerd']
+            # algo_lists = ['bc_fc']
             for algo in algo_lists:
                 self.solving(mapName, algo)
 
@@ -113,6 +113,9 @@ class SystemController:
             print("\t\t+ Nerd algorithm!")
             # solution = nerve(self.mapLists[mapName], 0)
             model = Nerd(self.mapLists[mapName])
+        elif algorithm == 'bc_fc':
+            print("\t\t+ Backward chaining + Forward chaining algorithm!")
+            model = BackAndForwardChaining(self.mapLists[mapName])
         else:
             print("\t\t+ Algorithm is not exist!")
             return None
@@ -154,7 +157,8 @@ if __name__ == '__main__':
         print('Solving all map with all current algorithms...')
         system.solvingAllMap()
         
-        # mapName = '4x4-sample'
+        # mapName = 'map6'
+        # algorithm = 'bc_fc'
         # algorithm = 'nerd'
         # system.solving(mapName, algorithm)
     elif sys.argv[2] == 'custom':
