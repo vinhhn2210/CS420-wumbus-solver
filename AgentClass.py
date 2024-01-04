@@ -4,7 +4,7 @@ import Const
 class Agent:
 	def __init__(self, curCell):
 		self.agentCell = curCell
-		self.agentSize = (curCell.cellSize[0] * 4 / 7, curCell.cellSize[1] * 7 / 7)
+		self.agentSize = (curCell.cellSize[0] * 5 / 8, curCell.cellSize[1] * 5 / 8)
 		self.agentPadding = curCell.cellSize[1] * 30 / 100
 		self.agentCoord = self.getAgentCoord()
 

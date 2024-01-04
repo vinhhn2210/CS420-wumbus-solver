@@ -7,6 +7,8 @@ import ButtonClass
 import MenuClass
 import json
 
+MOVE = {3 : (0, -1), 2 : (1, 0), 1 : (0, 1), 0 : (-1, 0)}
+
 class InGame:
 	def __init__(self, menuData):
 		# Init
@@ -24,10 +26,10 @@ class InGame:
 		self.gameScreen.blit(self.gameBackground, (0, 0))
 		
 		# Ingame Map
-		self.inGameContainer = (159 / 1000 * self.screenWidth, 51 / 562.71 * self.screenHeight, 542 / 1000 * self.screenWidth, 447 / 562.71 * self.screenHeight)
+		self.inGameContainer = (195.58 / 1000 * self.screenWidth, 50.55 / 562.71 * self.screenHeight, 442.72 / 1000 * self.screenWidth, 442.72 / 562.71 * self.screenHeight)
 
 		# Minimap
-		self.minimapContainer = (762.51 / 1000 * self.screenWidth, 51 / 562.71 * self.screenHeight, 196 / 1000 * self.screenWidth, 152 / 562.71 * self.screenHeight)
+		self.minimapContainer = (748.97 / 1000 * self.screenWidth, 50.55 / 562.71 * self.screenHeight, 148 / 1000 * self.screenWidth, 148 / 562.71 * self.screenHeight)
 
 		# Running
 		self.running = True
@@ -66,7 +68,7 @@ class InGame:
 		self.totalStep = len(self.jsonData)
 
 		# Game Property
-		self.gamePropertyCoord = (763 / 1000 * self.screenWidth, 247 / 562.71 * self.screenHeight)
+		self.gamePropertyCoord = (725 / 1000 * self.screenWidth, 247 / 562.71 * self.screenHeight)
 		self.gamePropertySize = (196 / 1000 * self.screenWidth, 248 / 562.71 * self.screenHeight)
 		self.gamePropertiesContainer = (self.gamePropertyCoord[0], self.gamePropertyCoord[1], self.gamePropertySize[0], self.gamePropertySize[1])
 
@@ -102,7 +104,7 @@ class InGame:
 			Const.BROWN,
 			30,
 			"Time: 0ms",
-			(self.gamePropertiesContainer[0] + textPadding, self.gamePropertiesContainer[1] + self.gamePropertiesContainer[3] * 35 / 100, self.gamePropertiesContainer[2] - 2 * textPadding, self.gamePropertiesContainer[3] * 10 / 100)
+			(self.gamePropertiesContainer[0] + textPadding, self.gamePropertiesContainer[1] + self.gamePropertiesContainer[3] * 30 / 100, self.gamePropertiesContainer[2] - 2 * textPadding, self.gamePropertiesContainer[3] * 10 / 100)
 		)
 		# Time Text
 		self.memoryText = TextClass.Text(
@@ -110,7 +112,7 @@ class InGame:
 			Const.BROWN,
 			30,
 			"Memory: 0MB",
-			(self.gamePropertiesContainer[0] + textPadding, self.gamePropertiesContainer[1] + self.gamePropertiesContainer[3] * 50 / 100, self.gamePropertiesContainer[2] - 2 * textPadding, self.gamePropertiesContainer[3] * 10 / 100)
+			(self.gamePropertiesContainer[0] + textPadding, self.gamePropertiesContainer[1] + self.gamePropertiesContainer[3] * 45 / 100, self.gamePropertiesContainer[2] - 2 * textPadding, self.gamePropertiesContainer[3] * 10 / 100)
 		)
 		# Score Text
 		self.scoreText = TextClass.Text(
@@ -118,20 +120,21 @@ class InGame:
 			Const.BROWN,
 			30,
 			"Score: 0",
-			(self.gamePropertiesContainer[0] + textPadding, self.gamePropertiesContainer[1] + self.gamePropertiesContainer[3] * 65 / 100, self.gamePropertiesContainer[2] - 2 * textPadding, self.gamePropertiesContainer[3] * 10 / 100)
+			(self.gamePropertiesContainer[0] + textPadding, self.gamePropertiesContainer[1] + self.gamePropertiesContainer[3] * 60 / 100, self.gamePropertiesContainer[2] - 2 * textPadding, self.gamePropertiesContainer[3] * 10 / 100)
 		)
 		# Score Text
 		self.endGameNotification = TextClass.Text(
 			Const.AMATICSC_FONT,
 			Const.RED,
 			30,
-			"Game is End",
-			(self.gamePropertiesContainer[0] + textPadding, self.gamePropertiesContainer[1] + self.gamePropertiesContainer[3] * 80 / 100, self.gamePropertiesContainer[2] - 2 * textPadding, self.gamePropertiesContainer[3] * 10 / 100)
+			"Game is End!",
+			(self.gamePropertiesContainer[0] + textPadding, self.gamePropertiesContainer[1] + self.gamePropertiesContainer[3] * 75 / 100, self.gamePropertiesContainer[2] - 2 * textPadding, self.gamePropertiesContainer[3] * 10 / 100)
 		)
 
 		self.timeText.changeTextContent(f'Time: 0ms')
 		self.memoryText.changeTextContent(f'Memory: 0MB')
-
+		self.scoreRecord = 0
+		self.explodeCell = None
 		# Update Map, Get Ready For Step 0
 		self.updateMap()
 
@@ -179,7 +182,14 @@ class InGame:
 
 		# Update Score For Frontend
 		self.scoreText.changeTextContent(f"Score: {score}")
-
+# {'UP': 0, 'RIGHT': 1, 'DOWN': 2, 'LEFT': 3}
+		if score == self.scoreRecord - 100:
+			self.gameMap.explodeCell(X + MOVE[0][0], Y + MOVE[0][1], score == self.scoreRecord - 100)
+			self.explodeCell = (X + MOVE[0][0], Y + MOVE[0][1])
+		else:
+			if self.explodeCell != None:
+				self.gameMap.unexplodeCell(self.explodeCell[0], self.explodeCell[1])
+				self.explodeCell = None
 		self.mapVision = self.jsonData[f'{self.step}']['vision']
 		self.map = self.jsonData[f'{self.step}']['map']
 
@@ -199,7 +209,7 @@ class InGame:
 		# Update agent
 		self.gameMap.getCell(X, Y).updateAgent(True)
 		self.agent.updateAgentCell(self.gameMap.getCell(X, Y))	
-
+		self.scoreRecord = score
 	def pauseGame(self):
 		while self.isPause == 1:
 			for event in pygame.event.get():

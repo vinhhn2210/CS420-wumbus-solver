@@ -27,14 +27,14 @@ TICK_IMAGE = [
 CLOSE_BUTTON = pygame.image.load('Assets/Images/Menu/CloseButton.png')
 
 # In Game
-INGAME_BACKGROUND = pygame.image.load('Assets/Images/InGame/Background.png')
+INGAME_BACKGROUND = pygame.image.load('Assets/Images/InGame/Background_new.png')
 CELL_IMAGE_LIST = [pygame.image.load(f'Assets/Images/InGame/Cell/tile-{i}.png') for i in range(1, 6)]
 CELL_IMAGE_CHEST = pygame.image.load(f'Assets/Images/InGame/Cell/chest.png')
 CELL_IMAGE_UNEXPLORED = pygame.image.load(f'Assets/Images/InGame/Cell/unexplored-tile.png')
 CELL_IMAGE_PIT = pygame.image.load(f'Assets/Images/InGame/Cell/pit.png')
 CELL_IMAGE_WUMPUS = pygame.image.load(f'Assets/Images/InGame/Cell/wumpus.png')
 CELL_IMAGE_EXIT = pygame.image.load(f'Assets/Images/InGame/Cell/exit.png')
-
+CELL_IMAGE_ARROW = pygame.image.load(f'Assets/Images/InGame/Cell/arrow.png')
 COLOR_AGENT = (228, 185, 36)
 
 # {'UP': 0, 'RIGHT': 1, 'DOWN': 2, 'LEFT': 3}

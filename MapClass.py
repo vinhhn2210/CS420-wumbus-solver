@@ -63,6 +63,13 @@ class Map:
 			isGold = True
 		curCell.updateChest(isGold)
 
+	def explodeCell(self, X, Y, value):
+		curCell = self.getCell(X, Y)
+		curCell.updateArrow(value)
+	def unexplodeCell(self, X, Y):
+		curCell = self.getCell(X, Y)
+		curCell.updateArrow(False)
+  
 	def draw(self, gameScreen):
 		for mapImageRow in self.mapImage:
 			for cell in mapImageRow:
