@@ -497,7 +497,7 @@ class DPLLAlgo:
 
             nextRoomStep = set(nextRoomStep)
 
-            print("Before: ", numClauses)
+            # print("Before: ", numClauses)
 
             for X, Y in nextRoomStep:
                 # Check for no Wumpus and no Pit cell
@@ -543,9 +543,9 @@ class DPLLAlgo:
                         pitLiteral = f'P_{X}_{Y}'
                         self.addClauseToKB(pitLiteral, 1)
 
-            print("After: ", numClauses)
+            # print("After: ", numClauses)
 
-            self.interactive.debug()  
+            # self.interactive.debug()  
             print("Next Valid Room: ", newRoomDict)
 
             if len(newRoomDict) == 0:

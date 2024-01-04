@@ -35,7 +35,7 @@ class InGame:
 		# Menu data
 		# algoName = menuData[1]
 		# jsonFilePath = 'Sources/Solution/result_' + str(menuData[0]) + '_' + algoName.lower() + '.json'
-		jsonFilePath = 'Sources/Solutions/result_test_dpll.json'
+		jsonFilePath = 'Sources/Solutions/[visualize]_' + menuData[0] + '_' + menuData[1] + '.json'
 		self.menuData = menuData
 		print(self.menuData)
 
@@ -62,7 +62,7 @@ class InGame:
 		self.clock = pygame.time.Clock()
 		self.isEndGame = False
 		self.initTick = pygame.time.get_ticks()
-		self.stepTime = 0.7
+		self.stepTime = 0.3
 		self.totalStep = len(self.jsonData)
 
 		# Game Property
@@ -119,6 +119,14 @@ class InGame:
 			30,
 			"Score: 0",
 			(self.gamePropertiesContainer[0] + textPadding, self.gamePropertiesContainer[1] + self.gamePropertiesContainer[3] * 65 / 100, self.gamePropertiesContainer[2] - 2 * textPadding, self.gamePropertiesContainer[3] * 10 / 100)
+		)
+		# Score Text
+		self.endGameNotification = TextClass.Text(
+			Const.AMATICSC_FONT,
+			Const.RED,
+			30,
+			"Game is End",
+			(self.gamePropertiesContainer[0] + textPadding, self.gamePropertiesContainer[1] + self.gamePropertiesContainer[3] * 80 / 100, self.gamePropertiesContainer[2] - 2 * textPadding, self.gamePropertiesContainer[3] * 10 / 100)
 		)
 
 		self.timeText.changeTextContent(f'Time: 0ms')
@@ -261,13 +269,8 @@ class InGame:
 
 				if str(self.step) in self.jsonData:
 					self.updateMap()
-			# 	else:
-			# 		self.isEndGame = True
-
-			# if self.isEndGame:
-				# leaderboard = LeaderboardClass.Leaderboard(self.menuData)
-				# leaderboard.run()
-				# break
+				else:
+					self.isEndGame = True
 
 			# Draw window
 			self.gameScreen.blit(self.gameBackground, (0, 0))
@@ -281,6 +284,8 @@ class InGame:
 			self.gameMap.draw(self.gameScreen)
 			self.minimap.draw(self.gameScreen)
 			self.agent.draw(self.gameScreen)
+			if self.isEndGame:
+				self.endGameNotification.draw(self.gameScreen)
 
 			pygame.display.update()
 

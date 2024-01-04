@@ -7,6 +7,7 @@ import InGameClass
 import sys
 sys.path.append('Sources')
 import system
+import os
 
 from tkinter import filedialog
 
@@ -23,6 +24,7 @@ class Menu:
         ### Prepare data
         self.algorithmID = -1
         self.mapID = 1
+        self.mapName = ""
 
         # Menu Screen
         self.gameScreen = pygame.display.set_mode(screenSize)
@@ -57,7 +59,7 @@ class Menu:
         # Algorithm Text
         algoSize = [containerBoxContainer[2] * 40 / 100, containerBoxContainer[3] * 10 / 100]
         tickSize = [algoSize[0] * 30 / 100, algoSize[1]]
-        self.algoTuple = ['DPLL', 'Nerve']
+        self.algoTuple = ['DPLL', 'BC-FC']
 
         # Choose Algorithm
         algoTickCoord = [
@@ -96,11 +98,13 @@ class Menu:
         )
 
         # Map ID
+        listMapFile = os.listdir('Sources/Map')
+        self.mapName = listMapFile[0][:-4]
         self.mapIDText = TextClass.Text(
             Const.AMATICSC_FONT,
             Const.BROWN,
-            40,
-            'Map ' + str(self.mapID),
+            35,
+            self.mapName,
             (self.mapDropbox.coord[0], self.mapDropbox.coord[1], self.mapDropbox.size[0], self.mapDropbox.size[1])
         )
 
@@ -166,7 +170,7 @@ class Menu:
             (fileDialogButton.coord[0], fileDialogButton.coord[1], fileDialogButton.size[0], fileDialogButton.size[1])
         )
 
-        algoTuple = ['DPLL', 'Nerve']
+        algoTuple = ['DPLL', 'BC-FC']
         algoID = -1
         algoCoord = (importCoord[0] + importSize[0] * 10 / 100, importCoord[1] + importSize[1] * 55 / 100)
         algoSize = ((importSize[0] - importSize[0] * 20 / 100) / 2, importSize[1] * 10 / 100)
@@ -286,15 +290,19 @@ class Menu:
             # Up, Down Map Process
             upMapState = self.upMapButton.isClicked(self.gameScreen)
             if upMapState == True:
-                if self.mapID < 5:
+                listMapFile = os.listdir('Sources/Map')
+                if self.mapID < len(listMapFile) - 1:
                     self.mapID += 1
-                self.mapIDText.changeTextContent('Map ' + str(self.mapID))
+                    self.mapName = listMapFile[self.mapID][:-4]
+                self.mapIDText.changeTextContent(self.mapName)
 
             downMapState = self.downMapButton.isClicked(self.gameScreen)
             if downMapState == True:
+                listMapFile = os.listdir('Sources/Map')
                 if self.mapID > 1:
                     self.mapID -= 1
-                self.mapIDText.changeTextContent('Map ' + str(self.mapID))
+                    self.mapName = listMapFile[self.mapID][:-4]
+                self.mapIDText.changeTextContent(listMapFile[self.mapID][:-4])
 
             # Algorithm Process
             for i in range(2):
@@ -318,7 +326,7 @@ class Menu:
             if startButtonState == True:
                 if self.algorithmID != -1:
                     print(self.algorithmID)
-                    ingame = InGameClass.InGame((self.mapID, self.algoTuple[self.algorithmID]))
+                    ingame = InGameClass.InGame((self.mapName, self.algoTuple[self.algorithmID]))
                     ingame.run()
                     break
 
