@@ -59,19 +59,20 @@ class Menu:
         # Algorithm Text
         algoSize = [containerBoxContainer[2] * 40 / 100, containerBoxContainer[3] * 10 / 100]
         tickSize = [algoSize[0] * 30 / 100, algoSize[1]]
-        self.algoTuple = ['DPLL', 'BC-FC']
+        self.algoTuple = ['DPLL', 'BC-FC', 'Nerve']
 
         # Choose Algorithm
         algoTickCoord = [
             (containerBoxContainer[0] + containerBoxContainer[2] * 5 / 100, containerBoxContainer[1] + containerBoxContainer[3] * 25 / 100, tickSize[0], tickSize[1]),
         ]
         algoTickCoord.append((containerBoxContainer[0] + containerBoxContainer[2] - algoSize[0], algoTickCoord[0][1], algoTickCoord[0][2], algoTickCoord[0][3]))
+        algoTickCoord.append((containerBoxContainer[0] + containerBoxContainer[2] * 5 / 100, algoTickCoord[0][1] + tickSize[1] + containerBoxContainer[3] * 5 / 100, algoTickCoord[0][2], algoTickCoord[0][3]))
 
         self.algoTickButtonList = [[ButtonClass.Button(
             (containerBoxContainer[2] * 10 / 100, containerBoxContainer[3] * 10 / 100),
             Const.TICK_IMAGE[j],
             algoTickCoord[i]
-        ) for j in range(2)] for i in range(2)]
+        ) for j in range(2)] for i in range(3)]
 
         self.algoText = [TextClass.Text(
             Const.VCR_OSD_MONO_FONT,
@@ -85,16 +86,16 @@ class Menu:
         self.mapText = TextClass.Text(
             Const.AMATICSC_FONT,
             Const.BROWN,
-            45,
+            40,
             "MAP",
-            (containerBoxContainer[0], containerBoxContainer[1] + containerBoxContainer[3] * 37 / 100, containerBoxContainer[2], containerBoxContainer[3] * 15 / 100)
+            (containerBoxContainer[0], containerBoxContainer[1] + containerBoxContainer[3] * 47 / 100, containerBoxContainer[2], containerBoxContainer[3] * 15 / 100)
         )
 
         # Map Dropbox
         self.mapDropbox = ObjectClass.Object(
-            (self.screenWidth * 25 / 100, self.screenHeight * 10 / 100),
+            (self.screenWidth * 25 / 100, self.screenHeight * 8 / 100),
             Const.DROPBOX_IMAGE,
-            (containerBoxContainer[0], containerBoxContainer[1] + containerBoxContainer[3] * 53 / 100, containerBoxContainer[2], containerBoxContainer[3] * 20 / 100)
+            (containerBoxContainer[0], containerBoxContainer[1] + containerBoxContainer[3] * 62 / 100, containerBoxContainer[2], containerBoxContainer[3] * 20 / 100)
         )
 
         # Map ID
@@ -126,7 +127,7 @@ class Menu:
         self.importMapButton = ButtonClass.Button(
             (self.screenWidth * 16 / 100, self.screenHeight * 8 / 100),
             Const.IMPORT_BUTTON_IMAGE,
-            (containerBoxContainer[0], containerBoxContainer[1] + containerBoxContainer[3] * 75 / 100, containerBoxContainer[2], containerBoxContainer[3] * 20 / 100),
+            (containerBoxContainer[0], containerBoxContainer[1] + containerBoxContainer[3] * 80 / 100, containerBoxContainer[2], containerBoxContainer[3] * 20 / 100),
         )
         self.importMapText = TextClass.Text(
             Const.AMATICSC_FONT,
@@ -170,13 +171,13 @@ class Menu:
             (fileDialogButton.coord[0], fileDialogButton.coord[1], fileDialogButton.size[0], fileDialogButton.size[1])
         )
 
-        algoTuple = ['DPLL', 'BC-FC']
+        algoTuple = ['DPLL', 'BC-FC', 'Nerve']
         algoID = -1
         algoCoord = (importCoord[0] + importSize[0] * 10 / 100, importCoord[1] + importSize[1] * 55 / 100)
-        algoSize = ((importSize[0] - importSize[0] * 20 / 100) / 2, importSize[1] * 10 / 100)
+        algoSize = ((importSize[0] - importSize[0] * 20 / 100) / 3, importSize[1] * 10 / 100)
         algoButton = []
         algoText = []
-        for i in range(2):  
+        for i in range(len(algoTuple)):  
             tmpAlgo = ButtonClass.Button(
                 (algoSize[0] * 70 / 100, algoSize[1]),
                 Const.DROPBOX_IMAGE,
@@ -223,7 +224,7 @@ class Menu:
                     self.running = False
                     exit(0)
 
-            for i in range(2):
+            for i in range(len(algoTuple)):
                 if algoButton[i].isClicked(self.gameScreen) == True:
                     algoID = i
 
@@ -305,7 +306,7 @@ class Menu:
                 self.mapIDText.changeTextContent(listMapFile[self.mapID][:-4])
 
             # Algorithm Process
-            for i in range(2):
+            for i in range(len(self.algoTuple)):
                 algoState = self.algoTickButtonList[i][0].isClicked(self.gameScreen)
                 if algoState == True:
                     self.algorithmID = i
@@ -333,7 +334,7 @@ class Menu:
             # Draw Window
             self.gameScreen.blit(self.backgroundImage, (0, 0))
             self.logicalAgentText.draw(self.gameScreen)
-            for i in range(2):
+            for i in range(len(self.algoTuple)):
                 if self.algorithmID == i:
                     self.algoTickButtonList[i][1].draw(self.gameScreen)
                 else:
