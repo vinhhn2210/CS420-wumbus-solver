@@ -6,7 +6,7 @@ from mapstate import *
 
 CUR_PATH = os.path.dirname(os.path.abspath(__file__))
 class WumpusWorldGenerator:
-    def __init__(self, size, name, pitCoef = 0.05, wumpusMaximun = 10, goldMaximum = 10):
+    def __init__(self, size, name, pitCoef = 0.1, wumpusMaximun = 10, goldMaximum = 10):
         self.size = int(size)
         self.name = name
         self.pitCoef = float(pitCoef)
@@ -20,7 +20,7 @@ class WumpusWorldGenerator:
         # generate pit
         for i in range(self.size):
             for j in range(self.size):
-                if random.random() < self.pitCoef:
+                if random.random() < self.pitCoef and (i != self.size - 1 or j != self.size - 1):
                     self.maze[i][j] = 'P'
         # generate wumpus
         nWumpus = random.randint(1, self.wumpusMaximun)
@@ -61,7 +61,10 @@ if __name__ == '__main__':
     if len(sys.argv) > 6:
         print('Please input 5 arguments: size, name, pitCoef, wumpusMaximun, goldMaximum')
         exit()
-    if len(sys.argv) == 3:
+    if len(sys.argv) < 3:
+        for i in range(1, 11):
+            WumpusWorldGenerator(10, 'map' + str(i))
+    elif len(sys.argv) == 3:
         WumpusWorldGenerator(sys.argv[1], sys.argv[2])
     elif len(sys.argv) == 4:
         WumpusWorldGenerator(sys.argv[1], sys.argv[2], sys.argv[3])

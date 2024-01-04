@@ -70,6 +70,8 @@ class SystemController:
         print('\t\t+ Result file: ' + '\033[93m' + '[KB]_' + mapName + '_' + algorithm + '.txt' + '\033[0m')
 
     def writeJson(self, mapName, algorithm, solution):
+        solution["0"]['time'] = self.timeCount
+        solution["0"]['memory'] = self.memoryCount
         with open(os.path.join(CUR_PATH, 'Solutions', '[visualize]_' + mapName + '_' + algorithm + '.json'), 'w') as f:
             json_str = json.dumps(solution, indent=4)
             json_str = re.sub(r"(?<=\[)[^\[\]]+(?=])", repl_func, json_str)
@@ -89,7 +91,7 @@ class SystemController:
 
     def solvingAllMap(self):
         for mapName in self.mapLists:
-            # algo_lists = ['bc_fc']
+            # algo_lists = ['nerd']
             for algo in algo_lists:
                 self.solving(mapName, algo)
 
