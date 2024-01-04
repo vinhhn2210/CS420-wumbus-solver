@@ -43,14 +43,14 @@ class Cell():
 		textSize = int(60 * cellSize[0] / 130.08)
 		self.stenchText = TextClass.Text(
 			Const.VCR_OSD_MONO_FONT,
-			Const.RED,
+			Const.S_COLOR,
 			textSize,
 			"S",
 			(cellCoord[0], cellCoord[1], cellSize[0], cellSize[1])
 		)
 		self.breezeText = TextClass.Text(
 			Const.VCR_OSD_MONO_FONT,
-			Const.RED,
+			Const.B_COLOR,
 			textSize,
 			"B",
 			(cellCoord[0], cellCoord[1], cellSize[0], cellSize[1])

@@ -5,6 +5,8 @@ WHITE = (255, 255, 255)
 BROWN = (128,0,0)
 BLACK = (0, 0, 0)
 RED = (255,0,0)
+S_COLOR = (255, 117, 117)
+B_COLOR = (139, 236, 242)
 
 # Text Font
 AMATICSC_FONT = 'Assets/Fonts/AmaticSC-Bold.ttf'
