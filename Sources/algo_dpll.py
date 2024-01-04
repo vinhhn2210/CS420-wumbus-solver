@@ -9,9 +9,6 @@ class KnowledgeBase:
         self.clauses = []
 
     def addClause(self, clause):
-        for i in self.clauses:
-            if i == clause:
-                return
         self.clauses.append(clause)
 
     def removeClause(self, clause):
@@ -19,25 +16,6 @@ class KnowledgeBase:
 
     def getClause(self):
         return copy.deepcopy(self.clauses)
-
-    def getClauseDetail(self, row, col):
-        res = []
-
-        for i in self.clauses:
-            curDict = {}
-            isExist = False
-            for j in i:
-                val, X, Y = j.split('_')
-                X = int(X)
-                Y = int(Y)
-                if X == row and Y == col:
-                    isExist = True
-                curDict[j] = i[j]
-
-            if isExist == True:
-                res.append(curDict)
-
-        return res
 
 class DPLLAlgo:
     def __init__(self, mapState):
@@ -47,32 +25,7 @@ class DPLLAlgo:
         self.mapSize = mapState.nSize
 
         self.KB = KnowledgeBase()
-
         self.roomDict = {}
-
-        # -------------------Set up intitial state for game-----------------------
-        for row in range(0, self.mapSize):
-            for col in range(0, self.mapSize):         
-                # Add Stench-Wumpus bijection Clauses
-                curNextRoom = self.getAdjacentRoomList(row, col)
-                curCNFDict = {f'S_{row}_{col}': -1}
-                for X, Y in curNextRoom:
-                    curCNF = {}
-                    curCNF[f'W_{X}_{Y}'] = -1
-                    curCNF[f'S_{row}_{col}'] = 1
-                    self.KB.addClause(curCNF)
-                    curCNFDict[f'W_{X}_{Y}'] = 1
-                self.KB.addClause(curCNFDict)
-
-                # Add Breeze-Pit bijection Clauses
-                curCNFDict = {f'B_{row}_{col}': -1}
-                for X, Y in curNextRoom:
-                    curCNF = {}
-                    curCNF[f'P_{X}_{Y}'] = -1
-                    curCNF[f'B_{row}_{col}'] = 1
-                    self.KB.addClause(curCNF)
-                    curCNFDict[f'P_{X}_{Y}'] = 1
-                self.KB.addClause(curCNFDict)
 
     def addClauseToKB(self, literal, val):
         curClause = {literal: val}
@@ -83,7 +36,7 @@ class DPLLAlgo:
     def removeClauseFromKB(self, literal, val):
         if self.roomDict.get(literal) != None:
             self.roomDict.pop(literal)
-            self.KB.removeClause({literal: 1})
+            self.KB.removeClause({literal: val})
 
     def getAdjacentRoomList(self, X, Y):
         NEXTDIR = ((0, -1), (0, 1), (-1, 0), (1, 0))
@@ -118,7 +71,7 @@ class DPLLAlgo:
 
     def FindUnitClause(self, clauses):
         for clause in clauses:
-            if len(clause)==1:
+            if len(clause) == 1:
                 for symbol in clause:
                     return symbol, clause[symbol]
         return -1, 0
@@ -134,7 +87,7 @@ class DPLLAlgo:
                     positive[literal] = 0
                     negative[literal] = 0
 
-                count[literal]= count[literal] + 1
+                count[literal] = count[literal] + 1
                 if clause[literal] == 1:
                     positive[literal] = positive[literal] + 1
                 else:
@@ -183,7 +136,7 @@ class DPLLAlgo:
             del symbols[pureSymbol]
             model[pureSymbol] = value
             return self.DPLL(clauses, symbols, model)
-        
+
         unitSymbol, value = self.FindUnitClause(clauses)
         if value != 0:
             del symbols[unitSymbol]
@@ -205,8 +158,14 @@ class DPLLAlgo:
         for clause in clauses:
             for literal in clause:
                 symbols[literal] = True
-        
+
         model = {}
+
+        for clause in clauses:
+            if len(clause) == 1:
+                for symbol in clause:
+                    model[symbol] = clause[symbol]
+        
         return self.DPLL(clauses, symbols, model)
 
     def moveToNextStep(self, start, visited, newRooms):
@@ -221,9 +180,7 @@ class DPLLAlgo:
             curRoom = queue.pop(0)
             nextRooms = self.getAdjacentRoomList(curRoom[0], curRoom[1])
 
-            for i in nextRooms:
-                X, Y = i
-
+            for X, Y in nextRooms:
                 if visited.get((X, Y)) == True or newRooms.get((X, Y)) == True:
                     if dist.get((X, Y)) == None:
                         dist[(X, Y)] = dist[curRoom] + 1
@@ -311,9 +268,7 @@ class DPLLAlgo:
             curRoom = queue.pop(0)
             nextRooms = self.getAdjacentRoomList(curRoom[0], curRoom[1])
 
-            for i in nextRooms:
-                X, Y = i
-
+            for X, Y in nextRooms:
                 if visited.get((X, Y)) == True or wumpusRooms.get((X, Y)) == True:
                     if dist.get((X, Y)) == None:
                         dist[(X, Y)] = dist[curRoom] + 1
@@ -366,9 +321,7 @@ class DPLLAlgo:
             curRoom = queue.pop(0)
             nextRooms = self.getAdjacentRoomList(curRoom[0], curRoom[1])
 
-            for i in nextRooms:
-                X, Y = i
-
+            for X, Y in nextRooms:
                 if visited.get((X, Y)) == True:
                     if dist.get((X, Y)) == None:
                         dist[(X, Y)] = dist[curRoom] + 1
@@ -415,9 +368,7 @@ class DPLLAlgo:
             curRoom = queue.pop(0)
             nextRooms = self.getAdjacentRoomList(curRoom[0], curRoom[1])
 
-            for i in nextRooms:
-                X, Y = i
-
+            for X, Y in nextRooms:
                 if visited.get((X, Y)) == True:
                     if dist.get((X, Y)) == None:
                         dist[(X, Y)] = dist[curRoom] + 1
@@ -456,8 +407,14 @@ class DPLLAlgo:
 
         print('Path: ', path)
 
-        for X in DIR:
-            self.shootWumpus(X)
+        for index in range(len(DIR)):
+            U, V, D = self.interactive.getPlayerPosition()
+            U += DIR_VAL[index][0]
+            V += DIR_VAL[index][1]
+            if self.roomDict.get(f'W_{U}_{V}') != -1:
+                isShootSuccessful = self.shootWumpus(DIR[index])
+                if isShootSuccessful == True:
+                    break
 
         return True
 
@@ -471,6 +428,32 @@ class DPLLAlgo:
             print("Number of Clauses: ", len(self.KB.clauses))
 
             visited[curPos] = True
+
+            # Add Stench-Wumpus bijection Clauses
+            row, col = curPos
+            curNextRoom = self.getAdjacentRoomList(row, col)
+            curCNFDict = {f'S_{row}_{col}': -1}
+            for X, Y in curNextRoom:
+                curCNF = {}
+                curCNF[f'W_{X}_{Y}'] = -1
+                curCNF[f'S_{row}_{col}'] = 1
+                if curCNF not in self.KB.clauses:
+                    self.KB.addClause(curCNF)
+                curCNFDict[f'W_{X}_{Y}'] = 1
+            if curCNFDict not in self.KB.clauses:
+                self.KB.addClause(curCNFDict)
+
+            # Add Breeze-Pit bijection Clauses
+            curCNFDict = {f'B_{row}_{col}': -1}
+            for X, Y in curNextRoom:
+                curCNF = {}
+                curCNF[f'P_{X}_{Y}'] = -1
+                curCNF[f'B_{row}_{col}'] = 1
+                if curCNF not in self.KB.clauses:
+                    self.KB.addClause(curCNF)
+                curCNFDict[f'P_{X}_{Y}'] = 1
+            if curCNFDict not in self.KB.clauses:
+                self.KB.addClause(curCNFDict)
 
             # Add no Wumpus on current room
             wumpusLiteral = f'W_{curPos[0]}_{curPos[1]}'
@@ -500,46 +483,69 @@ class DPLLAlgo:
             newRoomDict = {}
             wumpusRoomDict = {}
 
+            nextRoomStep = []
             for row, col in visited:
                 adjacentRoomList = self.getAdjacentRoomList(row, col)
-
                 for X, Y in adjacentRoomList:
                     if visited.get((X, Y)) == None:
-                        # Check for no Wumpus and no Pit cell
-                        tmpClauses = self.KB.getClause()
-                        checkClauses = {f'W_{X}_{Y}': 1, f'P_{X}_{Y}': 1}
-                        tmpClauses.append(checkClauses)
-
-                        if self.DPLLSatisfiable(tmpClauses) == False:
-                            # Add No Wumpus to KB
-                            wumpusLiteral = f'W_{X}_{Y}'
-                            self.addClauseToKB(wumpusLiteral, -1)
-                            # Add No Pit to KB
-                            pitLiteral = f'P_{X}_{Y}'
-                            self.addClauseToKB(pitLiteral, -1)
-
+                        nextRoomStep.append((X, Y))
+                        if self.roomDict.get(f'W_{X}_{Y}') == -1 and self.roomDict.get(f'P_{X}_{Y}') == -1:
                             newRoomDict[(X, Y)] = True
 
-                        # Check if room has Wumpus
-                        tmpClauses = self.KB.getClause()
-                        checkClauses = {f'W_{X}_{Y}': -1}
-                        tmpClauses.append(checkClauses)
+                    if self.roomDict.get(f'W_{X}_{Y}') == 1:
+                        wumpusRoomDict[(X, Y)] = True
 
-                        if self.DPLLSatisfiable(tmpClauses) == False:
-                            wumpusLiteral = f'W_{X}_{Y}'
-                            self.addClauseToKB(wumpusLiteral, 1)
-                            wumpusRoomDict[(X, Y)] = True
+            nextRoomStep = set(nextRoomStep)
 
-                        # # Check if room has Pit
-                        tmpClauses = self.KB.getClause()
-                        checkClauses = {f'P_{X}_{Y}': -1}
-                        tmpClauses.append(checkClauses)
+            # print("Before: ", numClauses)
 
-                        if self.DPLLSatisfiable(tmpClauses) == False:
-                            pitLiteral = f'P_{X}_{Y}'
-                            self.addClauseToKB(pitLiteral, 1)
+            for X, Y in nextRoomStep:
+                # Check for no Wumpus and no Pit cell
+                if self.roomDict.get(f'W_{X}_{Y}') == -1 and self.roomDict.get(f'P_{X}_{Y}') == -1:
+                    pass
+                else:
+                    tmpClauses = self.KB.getClause()
+                    checkClauses = {f'W_{X}_{Y}': 1, f'P_{X}_{Y}': 1}
+                    tmpClauses.append(checkClauses)
 
-            self.interactive.debug()
+                    if self.DPLLSatisfiable(tmpClauses) == False:
+                        # Add No Wumpus to KB
+                        wumpusLiteral = f'W_{X}_{Y}'
+                        self.addClauseToKB(wumpusLiteral, -1)
+                        # Add No Pit to KB
+                        pitLiteral = f'P_{X}_{Y}'
+                        self.addClauseToKB(pitLiteral, -1)
+                        # Update Room Dictionary
+                        newRoomDict[(X, Y)] = True
+
+                # Check if room has Wumpus
+                if self.roomDict.get(f'W_{X}_{Y}') == 1:
+                    pass
+                else:
+                    tmpClauses = self.KB.getClause()
+                    checkClauses = {f'W_{X}_{Y}': -1}
+                    tmpClauses.append(checkClauses)
+
+                    if self.DPLLSatisfiable(tmpClauses) == False:
+                        wumpusLiteral = f'W_{X}_{Y}'
+                        self.addClauseToKB(wumpusLiteral, 1)
+                        wumpusRoomDict[(X, Y)] = True
+
+                # Check if room has Pit
+                if self.roomDict.get(f'P_{X}_{Y}') == 1:
+                    pass
+                else:
+                    tmpClauses = self.KB.getClause()
+                    checkClauses = {f'P_{X}_{Y}': -1}
+                    tmpClauses.append(checkClauses)
+
+                    if self.DPLLSatisfiable(tmpClauses) == False:
+                        pitLiteral = f'P_{X}_{Y}'
+                        self.addClauseToKB(pitLiteral, 1)
+
+            # print("After: ", numClauses)
+
+            # self.interactive.debug()  
             print("Next Valid Room: ", newRoomDict)
 
             if len(newRoomDict) == 0:
@@ -556,12 +562,11 @@ class DPLLAlgo:
                         isGoToExit = self.goToExit(curPos, visited)
 
                         if isGoToExit == False:
-                            print("No Path To Exit")
-                        else:
+                            print("No Path To Exit!!!!!")
                             self.interactive.gameEnd()
-
-                        # for i in self.KB.clauses:
-                        #     print(i)
+                        else:
+                            print('Go To Cell 1, 1 Successful!!!!!')
+                            self.interactive.gameEnd()
                         break                        
             else:
                 self.moveToNextStep(curPos, visited, newRoomDict)
