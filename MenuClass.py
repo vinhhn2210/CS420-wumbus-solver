@@ -52,14 +52,14 @@ class Menu:
             Const.AMATICSC_FONT,
             Const.BROWN,
             45,
-            "LOGICAL AGENT",
+            "SELECT LOGICAL AGENT",
             (containerBoxContainer[0], containerBoxContainer[1] + containerBoxContainer[3] * 5 / 100, containerBoxContainer[2], containerBoxContainer[3] * 15 / 100)
         )
 
         # Algorithm Text
         algoSize = [containerBoxContainer[2] * 40 / 100, containerBoxContainer[3] * 10 / 100]
         tickSize = [algoSize[0] * 30 / 100, algoSize[1]]
-        self.algoTuple = ['DPLL', 'BC-FC', 'Nerve']
+        self.algoTuple = ['dpll', 'bc_fc', 'nerd']
 
         # Choose Algorithm
         algoTickCoord = [
@@ -73,12 +73,11 @@ class Menu:
             Const.TICK_IMAGE[j],
             algoTickCoord[i]
         ) for j in range(2)] for i in range(3)]
-
         self.algoText = [TextClass.Text(
             Const.VCR_OSD_MONO_FONT,
             Const.BROWN,
             25,
-            self.algoTuple[i],
+            self.algoTuple[i].upper(),
             (self.algoTickButtonList[i][0].coord[0] + containerBoxContainer[2] * 2 / 100 + self.algoTickButtonList[i][0].size[0], self.algoTickButtonList[i][0].coord[1], algoSize[0] - tickSize[0], self.algoTickButtonList[i][0].size[1])
         ) for i in range(len(self.algoTuple))]
 
@@ -87,7 +86,7 @@ class Menu:
             Const.AMATICSC_FONT,
             Const.BROWN,
             40,
-            "MAP",
+            "SELECT MAP",
             (containerBoxContainer[0], containerBoxContainer[1] + containerBoxContainer[3] * 47 / 100, containerBoxContainer[2], containerBoxContainer[3] * 15 / 100)
         )
 
