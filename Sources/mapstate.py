@@ -67,7 +67,6 @@ class MapState:
                         print(Fore.WHITE + ch, end = '')
                 print(Fore.WHITE + ' ', end = '\t')
             print()
-        print('Map end')
 
 def loadMap(folderPath, mapName):
     MAP_PATH = os.path.join(CUR_PATH, folderPath, mapName)

@@ -6,7 +6,7 @@ from mapstate import *
 
 CUR_PATH = os.path.dirname(os.path.abspath(__file__))
 class WumpusWorldGenerator:
-    def __init__(self, size, name, pitCoef = 0.25, wumpusMaximun = 10, goldMaximum = 10):
+    def __init__(self, size, name, pitCoef = 0.1, wumpusMaximun = 10, goldMaximum = 10):
         self.size = int(size)
         self.name = name
         self.pitCoef = float(pitCoef)
