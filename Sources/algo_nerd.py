@@ -240,7 +240,7 @@ class Nerd:
         player = self.interactive.getPlayerPosition()
         self.knowledgeBase.initial(W, (wumpus[0], wumpus[1]))
         self.interactive.appendKBLog(self.knowledgeBase.knowledgeBase[(wumpus[0], wumpus[1])])
-        print(Fore.BLUE + "May kill Wumpus at" + Fore.WHITE, wumpus)
+        # print(Fore.BLUE + "May kill Wumpus at" + Fore.WHITE, wumpus)
         self.safe.append((wumpus[0], wumpus[1]))
         
         self.updateView((wumpus[0], wumpus[1]))
@@ -372,7 +372,7 @@ class Nerd:
                 if (self.killWumpus()):
                     # print("I may kill a wumpus")
                     continue
-                print(Fore.GREEN + "\nTry to escape" + Fore.WHITE)
+                # print(Fore.GREEN + "\nTry to escape" + Fore.WHITE)
                 self.escape()
                 self.interactive.isEnd = True
         # print(Fore.GREEN + "\n\nWhat i have view: ")

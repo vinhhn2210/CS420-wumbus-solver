@@ -64,7 +64,7 @@ class InGame:
 		self.clock = pygame.time.Clock()
 		self.isEndGame = False
 		self.initTick = pygame.time.get_ticks()
-		self.stepTime = 0.3
+		self.stepTime = 0.05
 		self.totalStep = len(self.jsonData)
 
 		# Game Property

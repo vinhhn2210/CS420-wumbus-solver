@@ -121,17 +121,33 @@ class BC_FC_KB:
                     print("x", end=" ")
             print()
             
-    def fc_function(self, string, i, j):
+    def fc_function_wumpus(self, string, i, j):
         # clause = [string[0:12], string[17:32], string[37:56], string[61:84], string[89:112]]
         # pair =  eval(string[122:132])
         if (len(string) == 52):
             clause = [string[0:12], string[17:32]]
+            # print(clause)
             pair = eval(string[42:52])
-            for fol in clause:
-                if eval(fol) == False:
-                    return False
-            return self.updateWumpus(pair[0], pair[1])
-        return False
+        else:
+            clause = [string[0:12], string[17:34], string[39:56], string[61:78]]
+            # print(clause)
+            pair = eval(string[88:98])
+        for fol in clause:
+            # print(fol)
+            if eval(fol) == False:
+                return False
+        # print("Found wumpus at", pair[0], pair[1])
+        return self.updateWumpus(pair[0], pair[1])
+    
+    def fc_function_pit(self, string, i, j):
+        clause = [string[0:12], string[17:36], string[41:60], string[65:84]]
+        pair = eval(string[94:104])
+        # print(clause)
+        # print(pair)
+        for fol in clause:
+            if eval(fol) == False:
+                return False
+        return self.updatePit(pair[0], pair[1])
             
     def M(self, i, j):
         if i < 0 or i >= self.n or j < 0 or j >= self.n:
@@ -151,14 +167,16 @@ class BC_FC_KB:
     def notP(self, i, j):
         if i < 0 or i >= self.n or j < 0 or j >= self.n:
             return True
-        return self.p[i][j] == 0
+        return self.m[i][j]
     
     def S(self, i, j):
         if i < 0 or i >= self.n or j < 0 or j >= self.n:
             return False
+        # print("S ",i, j, self.s[i][j])
         return self.s[i][j]
     
     def notB(self, i, j):
+        # print("B", i, j, self.b[i][j])
         if i < 0 or i >= self.n or j < 0 or j >= self.n:
             return True
         return self.b[i][j] == 0
@@ -166,12 +184,18 @@ class BC_FC_KB:
     def PM(self, i, j):
         if i < 0 or i >= self.n or j < 0 or j >= self.n:
             return False
-        return self.m[i][j] == 1 or self.p[i][j] == 1
+        return self.m[i][j] == 1 or self.p[i][j] == 1 or self.b[i][j] == 1 or self.s[i][j] == 1
     
     def updateWumpus(self, i, j):
         if i < 0 or i >= self.n or j < 0 or j >= self.n or self.m[i][j] == 1 or self.b[i][j] == 1 or self.s[i][j] == 1:
             return False
         self.w[(i, j)] = 1
+        return True
+    
+    def updatePit(self, i, j):
+        if i < 0 or i >= self.n or j < 0 or j >= self.n or self.m[i][j] == 1 or self.b[i][j] == 1 or self.s[i][j] == 1:
+            return False
+        self.p[i][j] = 1
         return True
     
     def backward_chaining(self, i, j):
@@ -183,9 +207,16 @@ class BC_FC_KB:
                 return True
         return False
     
-    def forward_chaining(self, i, j):
+    def forward_chaining_pit(self, i, j):
+        for rule in self.pit_rule:
+            if self.fc_function_pit(rule, i, j):
+                self.temp_rule = "FC: " + rule + ", {i/" + str(i) + ", j/" + str(j) + "}"
+                return True
+        return False
+    
+    def forward_chaining_wumpus(self, i, j):
         for rule in self.wumpus_rule:
-            if self.fc_function(rule, i, j):
+            if self.fc_function_wumpus(rule, i, j):
                 self.temp_rule = "FC: " + rule + ", {i/" + str(i) + ", j/" + str(j) + "}"
                 return True
         return False
@@ -206,6 +237,7 @@ class BackAndForwardChaining:
         self.knowledgeBase = BC_FC_KB(mapState.nSize)
         self.travel = [[0 for i in range(mapState.nSize)] for j in range(mapState.nSize)]
         self.stench = []
+        self.breeze = []
         
     def escape(self):
         self.safe = [(self.door[0], self.door[1])]
@@ -310,7 +342,7 @@ class BackAndForwardChaining:
         path = []
         current = self.findWumpus()
         if (current == None):
-            print("No more wumpus to kill")
+            # print("No more wumpus to kill")
             return False
         while (self.parent[current]):
             move, current = self.parent[current]
@@ -359,8 +391,11 @@ class BackAndForwardChaining:
     
     def killWumpus(self):
         self.knowledgeBase.w = {}
+        for b in self.breeze:
+            self.knowledgeBase.forward_chaining_pit(b[0], b[1])
+        
         for s in self.stench:
-            self.knowledgeBase.forward_chaining(s[0], s[1])
+            self.knowledgeBase.forward_chaining_wumpus(s[0], s[1])
         # search for possible wumpus in estimate: estimate[1] > 1
         if self.knowledgeBase.w is {}:
             return False
@@ -391,6 +426,7 @@ class BackAndForwardChaining:
                 self.knowledgeBase.m[position[0]][position[1]] = 1
             if self.interactive.isBreeze():
                 self.knowledgeBase.b[position[0]][position[1]] = 1
+                self.breeze.append((position[0], position[1]))
             if self.interactive.isStench():
                 self.knowledgeBase.s[position[0]][position[1]] = 1
                 self.stench.append((position[0], position[1]))
@@ -415,11 +451,12 @@ class BackAndForwardChaining:
             else:
                 if (self.killWumpus()):
                     continue
-                print(Fore.GREEN + "\nTry to escape" + Fore.WHITE)
+                # print(Fore.GREEN + "\nTry to escape" + Fore.WHITE)
                 self.escape()
                 self.interactive.isEnd = True
         self.interactive.gameEnd()
-        self.interactive.debug()
+        # self.knowledgeBase.print()
+        # self.interactive.debug()
         return self.interactive.getLogs() # donot modify this line
     
     def displayKB(self):
