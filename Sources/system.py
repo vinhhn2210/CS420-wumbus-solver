@@ -100,7 +100,6 @@ class SystemController:
                 self.solving(mapName, algo)
 
     def solvingAllMapWithAlgo(self, algo):
-        print(len(self.mapLists))
         for mapName in self.mapLists:
             self.solving(mapName, algo)
 

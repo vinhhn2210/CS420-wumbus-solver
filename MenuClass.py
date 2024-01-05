@@ -242,7 +242,6 @@ class Menu:
 
                     curAlgo = algoTuple[algoID]
                     curAlgo = curAlgo.lower()
-                    print(curAlgo)
                     mapSolution = menuSystem.solvingAllMapWithAlgo(curAlgo)
 
                     ingame = InGameClass.InGame(('mapimport', curAlgo))
