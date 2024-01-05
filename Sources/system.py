@@ -91,7 +91,7 @@ class SystemController:
 
     def solvingAllMap(self):
         for mapName in self.mapLists:
-            algo_lists = ['bc_fc', 'nerd']
+            #algo_lists = ['bc_fc', 'nerd']
             for algo in algo_lists:
                 self.solving(mapName, algo)
 
