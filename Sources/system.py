@@ -46,6 +46,10 @@ class SystemController:
         print('\t\t+ Memory:\t' + '\033[93m' + str(self.memoryCount) + '\033[0m' + ' MB')
         return self.timeCount, self.memoryCount
 
+    def readUserImportMap(self, mapPath):
+        mapName = 'mapimport'
+        self.mapLists[mapName] = loadMapOnDirectory(mapPath, mapName)
+
     def readAllFolderMap(self, folderPath):
         MAP_PATH = os.path.join(CUR_PATH, folderPath)
         for mapName in os.listdir(MAP_PATH):
@@ -94,6 +98,11 @@ class SystemController:
             #algo_lists = ['bc_fc', 'nerd']
             for algo in algo_lists:
                 self.solving(mapName, algo)
+
+    def solvingAllMapWithAlgo(self, algo):
+        print(len(self.mapLists))
+        for mapName in self.mapLists:
+            self.solving(mapName, algo)
 
     def solving(self, mapName, algorithm):
         print('-' * 50)

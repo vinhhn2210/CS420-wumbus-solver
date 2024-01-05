@@ -170,7 +170,7 @@ class Menu:
             (fileDialogButton.coord[0], fileDialogButton.coord[1], fileDialogButton.size[0], fileDialogButton.size[1])
         )
 
-        algoTuple = ['DPLL', 'BC-FC', 'Nerd']
+        algoTuple = ['DPLL', 'BC_FC', 'Nerd']
         algoID = -1
         algoCoord = (importCoord[0] + importSize[0] * 10 / 100, importCoord[1] + importSize[1] * 55 / 100)
         algoSize = ((importSize[0] - importSize[0] * 20 / 100) / 3, importSize[1] * 10 / 100)
@@ -230,29 +230,25 @@ class Menu:
             if closeButton.isClicked(self.gameScreen):
                 return False
 
-            # if startButton.isClicked(self.gameScreen):
-            #     if curFileTxt == None:
-            #         processText.changeTextContent('Not Valid File')
-            #     elif algoID == -1:
-            #         processText.changeTextContent('Please Choose Algorithm')
-            #     else:
-            #         processText.changeTextContent('Loading...')
-            #         menuSystem = system.SystemController()
-            #         menuSystem.readUserImportMap(curFileTxt, levelID)
+            if startButton.isClicked(self.gameScreen):
+                if curFileTxt == None:
+                    processText.changeTextContent('Not Valid File')
+                elif algoID == -1:
+                    processText.changeTextContent('Please Choose Algorithm')
+                else:
+                    processText.changeTextContent('Loading...')
+                    menuSystem = system.SystemController()
+                    menuSystem.readUserImportMap(curFileTxt)
 
-            #         curAlgo = algoTuple[levelID][algoID]
-            #         curAlgo = curAlgo.lower()
-            #         if curAlgo == 'a*':
-            #             curAlgo = 'astar'
-            #         mapSolution = menuSystem.solvingUserImportMap(curAlgo)
+                    curAlgo = algoTuple[algoID]
+                    curAlgo = curAlgo.lower()
+                    print(curAlgo)
+                    mapSolution = menuSystem.solvingAllMapWithAlgo(curAlgo)
 
-            #         if mapSolution == None:
-            #             processText.changeTextContent('No Solution, Please Choose Another Map')
-            #         else:
-            #             ingame = InGame.InGame((0, levelID, curAlgo))
-            #             ingame.run()
+                    ingame = InGameClass.InGame(('mapimport', curAlgo))
+                    ingame.run()
 
-            #             return True
+                    return True
 
             if fileDialogButton.isClicked(self.gameScreen):
                 curFileTxt = openFileDialog()

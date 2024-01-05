@@ -80,6 +80,16 @@ def loadMap(folderPath, mapName):
         for i in range(nSize):
             mazer.append(f.readline().strip().split('.'))
     return MapState(mapName[:-4], nSize, mazer)
+
+def loadMapOnDirectory(folderPath, mapName):
+    MAP_PATH = folderPath
+    with open(MAP_PATH, 'r') as f:
+        nSize = int(f.readline())
+        mazer = []
+        for i in range(nSize):
+            mazer.append(f.readline().strip().split('.'))
+    return MapState(mapName[:-4], nSize, mazer)
+
 ''''''
 def generatePlayer(mazer, nSize):
     '''call this only once'''
