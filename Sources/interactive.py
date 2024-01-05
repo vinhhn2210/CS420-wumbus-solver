@@ -262,7 +262,7 @@ class InteractiveGame:
             print('Game is already ended, please start a new game!')
             return False
         self.score -= 100
-        self.flushLog()
+        
         nextX = self.playerPosition[0] + self.dx[self.playerPosition[2]]
         nextY = self.playerPosition[1] + self.dy[self.playerPosition[2]]
         if 'W' in self.mazer[nextX][nextY]:
@@ -275,10 +275,11 @@ class InteractiveGame:
             # print(Fore.RED + "You killed the Wumpus!")
             # MapState('agentMap', self.size, self.mazer).printMap()
             #self.score += 100
-            #self.flushLog()
+            self.flushLog()
             #self.gameEnd()
             return True
         else:
+            self.flushLog()
             return False
 
     def gameEnd(self):
