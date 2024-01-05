@@ -87,7 +87,7 @@ class Menu:
             Const.BROWN,
             40,
             "SELECT MAP",
-            (containerBoxContainer[0], containerBoxContainer[1] + containerBoxContainer[3] * 47 / 100, containerBoxContainer[2], containerBoxContainer[3] * 15 / 100)
+            (containerBoxContainer[0], containerBoxContainer[1] + containerBoxContainer[3] * 50 / 100, containerBoxContainer[2], containerBoxContainer[3] * 15 / 100)
         )
 
         # Map Dropbox
@@ -170,7 +170,7 @@ class Menu:
             (fileDialogButton.coord[0], fileDialogButton.coord[1], fileDialogButton.size[0], fileDialogButton.size[1])
         )
 
-        algoTuple = ['DPLL', 'BC-FC', 'Nerve']
+        algoTuple = ['DPLL', 'BC-FC', 'Nerd']
         algoID = -1
         algoCoord = (importCoord[0] + importSize[0] * 10 / 100, importCoord[1] + importSize[1] * 55 / 100)
         algoSize = ((importSize[0] - importSize[0] * 20 / 100) / 3, importSize[1] * 10 / 100)
@@ -185,7 +185,7 @@ class Menu:
             tmpAlgoText = TextClass.Text(
                 Const.AMATICSC_FONT,
                 Const.BROWN,
-                15,
+                20,
                 algoTuple[i],
                 (tmpAlgo.coord[0], tmpAlgo.coord[1], tmpAlgo.size[0], tmpAlgo.size[1])
             )
