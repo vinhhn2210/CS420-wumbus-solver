@@ -338,7 +338,7 @@ class Nerd:
         
         while not self.interactive.isEnd:
             # self.displayKB()
-            # self.interactive.debug()
+            self.interactive.debug()
             player = self.interactive.getPlayerPosition()
             
             # print(Fore.YELLOW + "\nPlayer is at" + Fore.WHITE, player)

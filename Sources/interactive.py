@@ -45,6 +45,7 @@ class InteractiveGame:
         print('player position:', self.playerPosition, 'score:', self.score)
         debugMaze = copy.deepcopy(self.mazer)
         debugMaze[self.playerPosition[0]][self.playerPosition[1]] += 'A'
+        debugMaze = debugMaze[::-1]
         for i in range(self.size):
             for j in range(self.size):
                 for ch in debugMaze[i][j]:
@@ -64,8 +65,9 @@ class InteractiveGame:
                         print(Fore.BLUE + ch, end = '')
                 print(Fore.WHITE + ' ', end = '\t')
             print(end = '\t\t')
+            debugExplored = copy.deepcopy(self.explored)[::-1]
             for j in range(self.size):
-                if self.explored[i][j] == False:
+                if debugExplored[i][j] == False:
                     print(Fore.WHITE + 'X', end = '\t')
                     continue
                 for ch in debugMaze[i][j]:
@@ -287,7 +289,7 @@ class InteractiveGame:
             return False
 
     def gameEnd(self):
-        #self.debug()
+        self.debug()
         self.isEnd = True
         # add color to game score
         print('\t\t+ Score:\t' + '\033[93m' + str(self.score) + '\033[0m')  

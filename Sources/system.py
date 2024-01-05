@@ -39,10 +39,10 @@ class SystemController:
         self.memoryCount = tracemalloc.get_traced_memory()[1] / (1024 ** 2)
         #self.memoryCount = self.memoryCount.memory_info().rss / (1024 ** 2)
         # print time, mem with 4 digits after comma
-        self.timeCount = round(self.timeCount * 1000, 4)
+        self.timeCount = round(self.timeCount, 4)
         self.memoryCount = round(self.memoryCount, 4)
         # add color to time and memory
-        print('\t\t+ Time:\t\t' + '\033[93m' + str(self.timeCount) + '\033[0m' + ' ms')
+        print('\t\t+ Time:\t\t' + '\033[93m' + str(self.timeCount) + '\033[0m' + ' s')
         print('\t\t+ Memory:\t' + '\033[93m' + str(self.memoryCount) + '\033[0m' + ' MB')
         return self.timeCount, self.memoryCount
 

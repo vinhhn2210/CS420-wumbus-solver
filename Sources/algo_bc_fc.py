@@ -308,7 +308,7 @@ class BackAndForwardChaining:
         for i in path:
             # print(Fore.YELLOW + "    Move to" + Fore.WHITE, i)
             self.interactive.moveImmediately(i)
-            # self.interactive.debug()
+            self.interactive.debug()
             
             # print(self.interactive.getPlayerPosition())
         return True
@@ -414,7 +414,7 @@ class BackAndForwardChaining:
         while not self.interactive.isEnd:
             # debug and display functions
             # self.displayKB()
-            # self.interactive.debug()
+            self.interactive.debug()
             
             player = self.interactive.getPlayerPosition()
             position = (player[0], player[1])

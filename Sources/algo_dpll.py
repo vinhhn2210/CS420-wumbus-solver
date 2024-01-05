@@ -562,7 +562,7 @@ class DPLLAlgo:
                     cnt += 1
                 self.interactive.appendKBLog(curCNFStr)
 
-            # self.interactive.debug()  
+            self.interactive.debug()  
             print("Next Valid Room: ", newRoomDict)
 
             if len(newRoomDict) == 0:
