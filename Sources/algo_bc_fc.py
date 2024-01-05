@@ -35,6 +35,7 @@ class BC_FC_KB:
         self.m = [[0 for i in range(n)] for j in range(n)]
         self.s = [[0 for i in range(n)] for j in range(n)]
         self.b = [[0 for i in range(n)] for j in range(n)]
+        self.p = [[0 for i in range(n)] for j in range(n)]
         self.w = {}
         self.n = n
         self.rule = [
@@ -59,6 +60,13 @@ class BC_FC_KB:
             "self.B(i, j - 1) AND self.S(i + 1, j) AND self.notB(i, j - 1) => self.M(i, j)",
             "self.B(i, j - 1) AND self.S(i - 1, j) AND self.notB(i, j - 1) => self.M(i, j)",
         ]
+        self.pit_rule = [
+            "self.B(i, j) AND self.notP(i - 1, j) AND self.notP(i, j + 1) AND self.notP(i, j - 1) => self.P(i + 1, j)",
+            "self.B(i, j) AND self.notP(i + 1, j) AND self.notP(i, j + 1) AND self.notP(i, j - 1) => self.P(i - 1, j)",
+            "self.B(i, j) AND self.notP(i + 1, j) AND self.notP(i - 1, j) AND self.notP(i, j - 1) => self.P(i, j + 1)",
+            "self.B(i, j) AND self.notP(i + 1, j) AND self.notP(i - 1, j) AND self.notP(i, j + 1) => self.P(i, j - 1)",
+        ]
+        
         # optimistic positive
         self.wumpus_rule = [
             # "self.S(i, j) AND self.notB(i, j) AND self.notB(i + 2, j) AND self.notB(i + 1, j - 1) AND self.notB(i + 1, j + 1) => self.W(i + 1, j)",
@@ -69,6 +77,11 @@ class BC_FC_KB:
             "self.S(i, j) AND self.notB(i, j) => self.W(i - 1, j)",
             "self.S(i, j) AND self.notB(i, j) => self.W(i, j + 1)",
             "self.S(i, j) AND self.notB(i, j) => self.W(i, j - 1)",
+            
+            "self.S(i, j) AND self.PM(i + 1, j) AND self.PM(i - 1, j) AND self.PM(i, j + 1) => self.W(i, j - 1)",
+            "self.S(i, j) AND self.PM(i + 1, j) AND self.PM(i - 1, j) AND self.PM(i, j - 1) => self.W(i, j + 1)",
+            "self.S(i, j) AND self.PM(i + 1, j) AND self.PM(i, j + 1) AND self.PM(i, j - 1) => self.W(i - 1, j)",
+            "self.S(i, j) AND self.PM(i - 1, j) AND self.PM(i, j + 1) AND self.PM(i, j - 1) => self.W(i + 1, j)",
         ]
         self.knowledgeBase = []
         
@@ -111,12 +124,14 @@ class BC_FC_KB:
     def fc_function(self, string, i, j):
         # clause = [string[0:12], string[17:32], string[37:56], string[61:84], string[89:112]]
         # pair =  eval(string[122:132])
-        clause = [string[0:12], string[17:32]]
-        pair = eval(string[42:52])
-        for fol in clause:
-            if eval(fol) == False:
-                return False
-        return self.updateWumpus(pair[0], pair[1])
+        if (len(string) == 52):
+            clause = [string[0:12], string[17:32]]
+            pair = eval(string[42:52])
+            for fol in clause:
+                if eval(fol) == False:
+                    return False
+            return self.updateWumpus(pair[0], pair[1])
+        return False
             
     def M(self, i, j):
         if i < 0 or i >= self.n or j < 0 or j >= self.n:
@@ -128,6 +143,16 @@ class BC_FC_KB:
             return False
         return self.b[i][j]
     
+    def P(self, i, j):
+        if i < 0 or i >= self.n or j < 0 or j >= self.n:
+            return False
+        return self.p[i][j]
+    
+    def notP(self, i, j):
+        if i < 0 or i >= self.n or j < 0 or j >= self.n:
+            return True
+        return self.p[i][j] == 0
+    
     def S(self, i, j):
         if i < 0 or i >= self.n or j < 0 or j >= self.n:
             return False
@@ -137,6 +162,11 @@ class BC_FC_KB:
         if i < 0 or i >= self.n or j < 0 or j >= self.n:
             return True
         return self.b[i][j] == 0
+    
+    def PM(self, i, j):
+        if i < 0 or i >= self.n or j < 0 or j >= self.n:
+            return False
+        return self.m[i][j] == 1 or self.p[i][j] == 1
     
     def updateWumpus(self, i, j):
         if i < 0 or i >= self.n or j < 0 or j >= self.n or self.m[i][j] == 1 or self.b[i][j] == 1 or self.s[i][j] == 1:
@@ -322,6 +352,7 @@ class BackAndForwardChaining:
                                 # print("Found safe position", j)
                                 self.safe.append((j[0], j[1]))
                                 self.knowledgeBase.knowledgeBase.append(self.knowledgeBase.temp_rule)
+                                self.interactive.appendKBLog(self.knowledgeBase.temp_rule)
         # print("Estimate after killing" + Fore.CYAN, wumpus, Fore.WHITE + "is ", self.estimate)
         # self.agentMap() 
     
@@ -337,6 +368,7 @@ class BackAndForwardChaining:
         # print(Fore.RED + "Possible wumpus: " + Fore.WHITE, self.knowledgeBase.w)
         if self.travelWumpus() is False:
             return False
+        self.interactive.appendKBLog(self.knowledgeBase.temp_rule)
         return True    
     def solve(self):
         self.interactive.gameStart() # donot modify this line
@@ -375,6 +407,7 @@ class BackAndForwardChaining:
                         if (i[0], i[1]) not in self.safe:
                             self.safe.append((i[0], i[1]))
                             self.knowledgeBase.knowledgeBase.append(self.knowledgeBase.temp_rule)
+                            self.interactive.appendKBLog(self.knowledgeBase.temp_rule)
             # print(Fore.CYAN + "Safe position: " + Fore.WHITE, self.safe)
             if self.travelNextMove():
                 

@@ -26,11 +26,16 @@ from interactive import *
 
 CONVERT = {'B': 1, 'S': 2, 'BS': 3}
 
-B = Fore.BLUE + "B" + Fore.WHITE
-S = Fore.RED + "S" + Fore.WHITE
-M = Fore.GREEN + "M" + Fore.WHITE
-W = Fore.MAGENTA + "~W" + Fore.WHITE
-P = Fore.CYAN + "~P" + Fore.WHITE
+# B = Fore.BLUE + "B" + Fore.WHITE
+# S = Fore.RED + "S" + Fore.WHITE
+# M = Fore.GREEN + "M" + Fore.WHITE
+# W = Fore.MAGENTA + "~W" + Fore.WHITE
+# P = Fore.CYAN + "~P" + Fore.WHITE
+B = "B"
+S = "S"
+M = "M"
+W = "~W"
+P = "~P"
 
 class Nerd_KB:
     def __init__(self):
@@ -46,10 +51,11 @@ class Nerd_KB:
         else:
             self.knowledgeBase[position] += f' => ({facts}({value[0]}, {value[1]}) & '
     def close_entail(self, position):
-        if self.knowledgeBase[position][-2:] == "& ":
-            self.knowledgeBase[position] = self.knowledgeBase[position][:-3] + ")"
-        else:
-            self.knowledgeBase[position] += ')'
+        if "=>" in self.knowledgeBase[position]:
+            if self.knowledgeBase[position][-2:] == "& ":
+                self.knowledgeBase[position] = self.knowledgeBase[position][:-3] + ")"
+            else:
+                self.knowledgeBase[position] += ')'
     
     def add(self, position, other_position):
         if position not in self.knowledgeBase:
@@ -233,7 +239,8 @@ class Nerd:
             self.interactive.move(wumpus[2])
         player = self.interactive.getPlayerPosition()
         self.knowledgeBase.initial(W, (wumpus[0], wumpus[1]))
-        # print(Fore.BLUE + "May kill Wumpus at" + Fore.WHITE, wumpus)
+        self.interactive.appendKBLog(self.knowledgeBase.knowledgeBase[(wumpus[0], wumpus[1])])
+        print(Fore.BLUE + "May kill Wumpus at" + Fore.WHITE, wumpus)
         self.safe.append((wumpus[0], wumpus[1]))
         
         self.updateView((wumpus[0], wumpus[1]))
@@ -272,6 +279,7 @@ class Nerd:
             self.knowledgeBase.initial(S, (player[0], player[1]))
             key = [0, 1]
                     # print("key", key, "at", player)
+        self.interactive.appendKBLog(self.knowledgeBase.knowledgeBase[(player[0], player[1])])
         for i in self.newMove((player[0], player[1])):
                     position = (i[0], i[1])
                     if position in self.estimate:
@@ -299,6 +307,7 @@ class Nerd:
                                 self.knowledgeBase.add((i[0], i[1]), (player[0], player[1]))
                                 self.knowledgeBase.add_entail(M, (i[0], i[1]), (i[0], i[1]))
                                 self.knowledgeBase.close_entail((i[0], i[1]))
+                                # self.interactive.appendKBLog(self.knowledgeBase.knowledgeBase[(i[0], i[1])])
                                 self.safe.append(position)
                                 self.view[position] = []
                                 self.estimate[position] = [0, 0]
@@ -315,6 +324,9 @@ class Nerd:
         if max_stench == 0:
             return False
         self.wumpus = [i for i in self.estimate if self.estimate[i][1] == max_stench]
+        self.wumpus = [i for i in self.wumpus if i not in self.view]
+        if not self.wumpus:
+            return False
         # print(Fore.RED + "Possible wumpus: " + Fore.WHITE, self.wumpus)
         self.travelWumpus(self.interactive.getPlayerPosition())
         return True    
@@ -325,8 +337,8 @@ class Nerd:
         
         
         while not self.interactive.isEnd:
-            self.displayKB()
-            self.interactive.debug()
+            # self.displayKB()
+            # self.interactive.debug()
             player = self.interactive.getPlayerPosition()
             
             # print(Fore.YELLOW + "\nPlayer is at" + Fore.WHITE, player)
@@ -341,15 +353,16 @@ class Nerd:
                         self.safe.append((i[0], i[1]))
                         self.knowledgeBase.add_entail(M, (player[0], player[1]), (i[0], i[1]))
                 self.knowledgeBase.close_entail((player[0], player[1]))
+                self.interactive.appendKBLog(self.knowledgeBase.knowledgeBase[(player[0], player[1])])
             
             # print(Fore.CYAN + "Estimate: " + Fore.WHITE, self.estimate)                
             # print(Fore.CYAN + "View: " + Fore.WHITE, self.view)                
                     
-            # print(Fore.WHITE + "Safe position" + Fore.WHITE, self.safe)
-            previous = player
-            # print(previous)
-            self.safe.remove((previous[0], previous[1]))
             # print(Fore.GREEN + "Safe position" + Fore.WHITE, self.safe)
+            previous = player
+            # print("previous", previous)
+            if (previous[0], previous[1]) in self.safe:
+                self.safe.remove((previous[0], previous[1]))
             if self.travelNextMove(previous):
                 # print("Move to safe position")
                 continue
@@ -364,7 +377,7 @@ class Nerd:
                 self.interactive.isEnd = True
         # print(Fore.GREEN + "\n\nWhat i have view: ")
         # print(self.view)
-        self.agentMap() 
+        # self.agentMap() 
         self.interactive.gameEnd()
         return self.interactive.getLogs() # donot modify this line
     

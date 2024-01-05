@@ -184,8 +184,8 @@ class InGame:
 		self.scoreText.changeTextContent(f"Score: {score}")
 # {'UP': 0, 'RIGHT': 1, 'DOWN': 2, 'LEFT': 3}
 		if score == self.scoreRecord - 100:
-			self.gameMap.explodeCell(X + MOVE[0][0], Y + MOVE[0][1], score == self.scoreRecord - 100)
-			self.explodeCell = (X + MOVE[0][0], Y + MOVE[0][1])
+			self.gameMap.explodeCell(X + MOVE[direction][0], Y + MOVE[direction][1], score == self.scoreRecord - 100)
+			self.explodeCell = (X + MOVE[direction][0], Y + MOVE[direction][1])
 		else:
 			if self.explodeCell != None:
 				self.gameMap.unexplodeCell(self.explodeCell[0], self.explodeCell[1])
