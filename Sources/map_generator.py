@@ -20,7 +20,7 @@ class WumpusWorldGenerator:
         # generate pit
         for i in range(self.size):
             for j in range(self.size):
-                if random.random() < self.pitCoef and (i != self.size - 1 or j != self.size - 1):
+                if random.random() < self.pitCoef and (i != self.size - 1 or j != 0):
                     self.maze[i][j] = 'P'
         # generate wumpus
         nWumpus = random.randint(1, self.wumpusMaximun)
@@ -63,7 +63,7 @@ if __name__ == '__main__':
         exit()
     if len(sys.argv) < 3:
         for i in range(1, 11):
-            WumpusWorldGenerator(10, 'map' + str(i))
+            WumpusWorldGenerator(10, 'new_map' + str(i))
     elif len(sys.argv) == 3:
         WumpusWorldGenerator(sys.argv[1], sys.argv[2])
     elif len(sys.argv) == 4:

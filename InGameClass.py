@@ -103,7 +103,7 @@ class InGame:
 			Const.AMATICSC_FONT,
 			Const.BROWN,
 			30,
-			"Time: 0ms",
+			"Time: 0s",
 			(self.gamePropertiesContainer[0] + textPadding, self.gamePropertiesContainer[1] + self.gamePropertiesContainer[3] * 30 / 100, self.gamePropertiesContainer[2] - 2 * textPadding, self.gamePropertiesContainer[3] * 10 / 100)
 		)
 		# Time Text
@@ -131,7 +131,7 @@ class InGame:
 			(self.gamePropertiesContainer[0] + textPadding, self.gamePropertiesContainer[1] + self.gamePropertiesContainer[3] * 75 / 100, self.gamePropertiesContainer[2] - 2 * textPadding, self.gamePropertiesContainer[3] * 10 / 100)
 		)
 
-		self.timeText.changeTextContent(f'Time: 0ms')
+		self.timeText.changeTextContent(f'Time: 0s')
 		self.memoryText.changeTextContent(f'Memory: 0MB')
 		self.scoreRecord = 0
 		self.explodeCell = None
@@ -173,7 +173,7 @@ class InGame:
 	def updateMap(self):
 		curTime = round(self.gameTime / self.totalStep * self.step, 2)
 		curMem = round(self.gameMemory / self.totalStep * self.step, 2)
-		self.timeText.changeTextContent(f'Time: {curTime}ms')
+		self.timeText.changeTextContent(f'Time: {curTime}s')
 		self.memoryText.changeTextContent(f'Memory: {curMem}MB')
 
 		X, Y, direction, score = self.jsonData[f"{self.step}"]["agent"]
