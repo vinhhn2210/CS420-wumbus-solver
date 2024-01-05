@@ -426,6 +426,9 @@ class DPLLAlgo:
             curAgentState = self.interactive.getPlayerPosition()
             curPos = (curAgentState[0], curAgentState[1])
 
+            self.step += 1
+            self.interactive.appendKBLog(f'Step {self.step}')
+
             print("Number of Clauses: ", len(self.KB.clauses))
 
             visited[curPos] = True
@@ -547,8 +550,6 @@ class DPLLAlgo:
             # print("After: ", numClauses)
 
             # Add to Knowledgebase Log
-            self.step += 1
-            self.interactive.appendKBLog(f'Step {self.step}: List of CNF Sentences')
             for sentence in self.KB.clauses:
                 cnt = 0
                 curCNFStr = ''
