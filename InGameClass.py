@@ -64,7 +64,7 @@ class InGame:
 		self.clock = pygame.time.Clock()
 		self.isEndGame = False
 		self.initTick = pygame.time.get_ticks()
-		self.stepTime = 0.05
+		self.stepTime = 0.3
 		self.totalStep = len(self.jsonData)
 
 		# Game Property
@@ -267,7 +267,7 @@ class InGame:
 				break
 
 			if self.upSpeedButton.isClicked(self.gameScreen) == True:
-				self.stepTime = max(0.3, self.stepTime - 0.1)
+				self.stepTime = max(0.05, self.stepTime - 0.1)
 			if self.downSpeedButton.isClicked(self.gameScreen) == True:
 				self.stepTime = min(1, self.stepTime + 0.1)
 
