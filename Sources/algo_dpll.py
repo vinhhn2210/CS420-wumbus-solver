@@ -26,6 +26,7 @@ class DPLLAlgo:
 
         self.KB = KnowledgeBase()
         self.roomDict = {}
+        self.step = 0
 
     def addClauseToKB(self, literal, val):
         curClause = {literal: val}
@@ -544,6 +545,21 @@ class DPLLAlgo:
                         self.addClauseToKB(pitLiteral, 1)
 
             # print("After: ", numClauses)
+
+            # Add to Knowledgebase Log
+            self.step += 1
+            self.interactive.appendKBLog(f'Step {self.step}: List of CNF Sentences')
+            for sentence in self.KB.clauses:
+                cnt = 0
+                curCNFStr = ''
+                for literal in sentence:
+                    if cnt > 0:
+                        curCNFStr += '|'
+                    if sentence[literal] == -1:
+                        curCNFStr += chr(172)
+                    curCNFStr += literal.replace('_', '')
+                    cnt += 1
+                self.interactive.appendKBLog(curCNFStr)
 
             # self.interactive.debug()  
             print("Next Valid Room: ", newRoomDict)
