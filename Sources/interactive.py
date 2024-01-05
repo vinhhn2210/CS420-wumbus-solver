@@ -10,6 +10,7 @@ class InteractiveGame:
         self.score = 0
         self.isEnd = False
         self.directions = {'UP': 0, 'RIGHT': 1, 'DOWN': 2, 'LEFT': 3}
+        self.whatDirection = {0: 'UP', 1: 'RIGHT', 2: 'DOWN', 3: 'LEFT'}
         self.dx = [-1, 0, 1, 0]
         self.dy = [0, 1, 0, -1]
         self.logs = []
@@ -159,12 +160,14 @@ class InteractiveGame:
     def isStench(self):
         for value in self.getCellView():
             if value == 'S':
+                self.appendKBLog('[Percept] Cell in ' + str(self.size - 1 - self.playerPosition[0]) + ',' + str(self.playerPosition[1]) + ' is stench (KB)')
                 return True
         return False
     
     def isBreeze(self):
         for value in self.getCellView():
             if value == 'B':
+                self.appendKBLog('[Percept] Cell in ' + str(self.size - 1 - self.playerPosition[0]) + ',' + str(self.playerPosition[1]) + ' is breeze (KB)')
                 return True
         return False
     
@@ -217,6 +220,7 @@ class InteractiveGame:
             self.playerPosition = (newX, newY, self.playerPosition[2])
             self.score -= 10
             self.explored[newX][newY] = True
+            self.appendKBLog('[Action] Move to cell in ' + str(self.size - 1 - newX) + ',' + str(newY) + '(KB)')
             if self.isGold():
                 self.score += 1000
                 self.mazer[self.playerPosition[0]][self.playerPosition[1]] = self.mazer[self.playerPosition[0]][self.playerPosition[1]].replace('G', '')
@@ -262,7 +266,7 @@ class InteractiveGame:
             print('Game is already ended, please start a new game!')
             return False
         self.score -= 100
-        
+        self.appendKBLog('[Action] Shoot arrow from cell in ' + str(self.size - 1 - self.playerPosition[0]) + ',' + str(self.playerPosition[1]) + ' with direction ' + self.whatDirection[self.playerPosition[2]] + '(KB)')
         nextX = self.playerPosition[0] + self.dx[self.playerPosition[2]]
         nextY = self.playerPosition[1] + self.dy[self.playerPosition[2]]
         if 'W' in self.mazer[nextX][nextY]:
