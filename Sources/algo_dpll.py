@@ -132,16 +132,16 @@ class DPLLAlgo:
         if len(clauses) == 0: # all clauses are true
             return True
 
-        pureSymbol, value = self.FindPureSymbol(clauses, symbols)
-        if value != 0:
-            del symbols[pureSymbol]
-            model[pureSymbol] = value
-            return self.DPLL(clauses, symbols, model)
-
         unitSymbol, value = self.FindUnitClause(clauses)
         if value != 0:
             del symbols[unitSymbol]
             model[unitSymbol] = value
+            return self.DPLL(clauses, symbols, model)
+
+        pureSymbol, value = self.FindPureSymbol(clauses, symbols)
+        if value != 0:
+            del symbols[pureSymbol]
+            model[pureSymbol] = value
             return self.DPLL(clauses, symbols, model)
 
         symbol, value = self.selectSymbol(clauses, symbols)
